@@ -4,13 +4,13 @@ import subprocess
 from flask import Flask, render_template, request
 from flask_cors import CORS
 
+app = Flask(__name__)
+CORS(app)
+
 # Import the blueprint from render.py
 from render import render_bp
 from blueprints.summarization import summarization_bp
 from blueprints.modify import modify_bp
-
-app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000"])
 
 @app.route('/', methods=['GET'])
 def home():
