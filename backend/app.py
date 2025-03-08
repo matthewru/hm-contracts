@@ -18,7 +18,6 @@ def home():
 # Register the blueprint so that its routes (like /render) become available
 app.register_blueprint(render_bp)
 app.register_blueprint(summarization_bp)
-app.register_blueprint(modify_bp)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
