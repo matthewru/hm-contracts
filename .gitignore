@@ -39,3 +39,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# Node.js (Next.js)
+node_modules/
+.next/
+out/
+.env
+.env.local
+
+# Python (Flask)
+backend/__pycache__/
+backend/venv/
+backend/.env
+instance/
+
+# Logs and system files
+*.log
+.DS_Store
