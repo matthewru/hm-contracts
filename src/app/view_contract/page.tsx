@@ -18,24 +18,6 @@ const ViewContract = () => {
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
   const [inputMessage, setInputMessage] = useState('');
 
-  // Simulate fetching rendered LaTeX content from the backend
-  useEffect(() => {
-    // This is example content with a page break marker.
-    // In your actual implementation, you might fetch this via an API call.
-    const fetchedContent = `
-      <div>
-        <h1>Page 1: Contract Content</h1>
-        <p>This is the first page of the contract. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-      </div>
-      <!--PAGE_BREAK-->
-      <div>
-        <h1>Page 2: More Content</h1>
-        <p>This is the second page of the contract. Vivamus luctus urna sed urna ultricies ac tempor dui sagittis.</p>
-      </div>
-    `;
-    setLatexContent(fetchedContent);
-  }, []);
-
   useEffect(() => {
     const storedContent = localStorage.getItem('contractHtml') || '';
     setLatexContent(storedContent);
@@ -86,14 +68,51 @@ const ViewContract = () => {
   }, [latexContent]);
 
   // Simplified message handler - just returns a fixed message
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputMessage) return;
     
-    // Add user message
-    setMessages(prev => [...prev, 
-      { role: 'user', content: inputMessage },
-      { role: 'assistant', content: 'This is a fixed response message for testing purposes.' }
+    const runStart = (messages.length === 0);
+
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', content: inputMessage }
     ]);
+
+    const selection = window.getSelection();
+    let focusedText = "";
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      if (printRef.current && printRef.current.contains(range.commonAncestorContainer)) {
+        focusedText = selection.toString();
+      }
+    } 
+
+    if (runStart) {
+      try {
+        const response = await fetch('http://localhost:5001/start_chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message: inputMessage, focus: focusedText, context: latexContent })
+        })
+          .then((response) => response.text(), (err) => {
+            throw new Error(err.message)
+          });
+    
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: response }
+        ]);
+      } catch (err) {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: 'Error: Unable to fetch response from Gemini API.' }
+        ]);
+      }
+    } else {
+      // TODO: create + implement endpoint for chat continuation
+    }
     
     // Clear input
     setInputMessage('');
@@ -220,7 +239,7 @@ const ViewContract = () => {
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Type your message..."
                 className="flex-1 p-2 border border-gray-300 rounded-md"
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
               />
               <Button onClick={handleSendMessage}>Send</Button>
             </div>

@@ -8,19 +8,20 @@ def extract_latex(text):
     matches = re.findall(r"```latex\s*(.*?)\s*```", text, re.DOTALL)
     return matches[0] if matches else text
 
-async def async_gen_latex(description, admin_first, admin_last, admin_company, document_type, client_first, client_last, client_company=None, modify_message=None, old_latex=None):
+async def async_gen_latex(description, admin_first, admin_last, admin_company, document_type, client_first, client_last, client_company=None):
     date = datetime.today()
 
     client = genai.Client(api_key="AIzaSyChp7kIwWx_fA_QEENcIgWCbGrrTNp96-4")
 
     instruction = (
-        "My company name should be in large bold font at the top. "
         "You are to output only LaTeX code with no explanation. "
-        "Always output enough LaTeX to fill at least three quarters of a page."
+        "You are to not leave unnecessary empty space. "
+        "You are to fill the entire page width. "
+        "You are to use tools such as tables for visual organization whenever needed."
     )
 
     content = (
-        f"Make me a basic {document_type} template for a small business based on the following info: "
+        f"Make me a professional {document_type} template based on the following info: "
         f"My information: name = {admin_first} {admin_last}, company = {admin_company}. "
         f"Client information: name = {client_first} {client_last}{', company = ' + client_company if client_company else ', no client company is provided, assume this is for an individual'}. "
         f"Date: {date}. "
@@ -49,13 +50,11 @@ def gen_latex(description, admin_first, admin_last, admin_company, document_type
     output = loop.run_until_complete(
         async_gen_latex(
             description, admin_first, admin_last, admin_company, 
-            document_type, client_first, client_last, client_company,
-            modify_message, old_latex
+            document_type, client_first, client_last, client_company
         )
     )
     
-    # Write the output to a LaTeX file before returning it
-    # with open("workingFiles/output.tex", "w") as f:
-    #     f.write(output)
+    with open("workingFiles/output.tex", "w") as f:
+        f.write(output)
     
     return output
