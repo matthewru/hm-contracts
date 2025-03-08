@@ -1,9 +1,10 @@
 "use client"
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
   doctype: string;
@@ -17,6 +18,7 @@ interface FormData {
 
 const GenContract = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>(); // Use the FormData type
+  const router = useRouter();
 
   // Handle form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
@@ -31,15 +33,18 @@ const GenContract = () => {
     };
 
     fetch('http://localhost:5001/render', {
-      method: 'POST', // HTTP method (POST for creating data)
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json', // Indicate that we're sending JSON
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(jsonData), // Convert the JSON object to a string
+      body: JSON.stringify(jsonData),
     })
-      .then((response) => response.json()) // Parse the response as JSON
-      .then((data) => console.log('Success:', data)) // Handle success
-      .catch((error) => console.error('Error:', error)); // Handle error
+      .then((response) => response.text())
+      .then((html) => {
+        localStorage.setItem('contractHtml', html);
+        router.push('/view_contract');
+      })
+      .catch((error) => console.error('Error:', error));
     console.log('Form submitted:', data);
   };
 
