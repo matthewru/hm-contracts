@@ -29,7 +29,7 @@ def render_contract():
         for attempt in range(max_attempts):
             try:
                 # TODO: Implement calling the API with modify message in the modify API call
-                contract_latex = gen_latex(prompt.get('description'), admin_first, admin_last, admin_company, prompt.get('doctype'), prompt.get('client', {}).get('firstName'), prompt.get('client', {}).get('lastName'), prompt.get('client', {}).get('company') if prompt.get('client', {}).get('company') else None, prompt.get('modifyMessage') if prompt.get('modifyMessage') else None, prompt.get('oldLatex') if prompt.get('modifyMessage') else None)
+                contract_latex = gen_latex(prompt.get('description'), admin_first, admin_last, admin_company, prompt.get('doctype'), prompt.get('client', {}).get('firstName'), prompt.get('client', {}).get('lastName'), prompt.get('client', {}).get('company') if prompt.get('client', {}).get('company') else None)
                 break
             except Exception as e:
                 # debugging statement
