@@ -15,9 +15,11 @@ async def async_gen_latex(description, admin_first, admin_last, admin_company, d
 
     instruction = (
         "You are to output only LaTeX code with no explanation. "
-        "You are to not leave unnecessary empty space. "
-        "You are to fill the entire page width. "
-        "You are to use tools such as tables for visual organization whenever needed."
+        "The document must be formatted for standard letter paper (8.5x11 inches) with body text in 12pt font. "
+        "Ensure the content fills the full page width, avoiding half-page layouts. "
+        "The header/title must include the admin company name. "
+        "Where forms are presented, use tables for clear organization. "
+        "When you have an hrule, it should span the entire width of the content it attempts to capture. "
     )
 
     content = (
