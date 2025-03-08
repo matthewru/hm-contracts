@@ -49,7 +49,7 @@ const GenContract = () => {
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto bg-white rounded-lg shadow-md">
+    <div className="p-6 max-w-xl bg-white rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">Generate Your Document</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Short Text Answer */}
@@ -59,7 +59,7 @@ const GenContract = () => {
             id="doctype"
             type="text"
             placeholder="Enter Document Type"
-            className="mt-4"
+            className="mt-4 w-full"
             {...register('doctype', { required: true })}
           />
           {errors.doctype && <p className="text-red-500 text-sm">Document type is required</p>}
@@ -72,7 +72,7 @@ const GenContract = () => {
             id="client.firstName"
             type="text"
             placeholder="Enter first name"
-            className="mt-4"
+            className="mt-4 w-full"
             {...register('client.firstName', { required: true })}
           />
           {errors.client?.firstName && <p className="text-red-500 text-sm">First name is required</p>}
@@ -83,7 +83,7 @@ const GenContract = () => {
             id="client.lastName"
             type="text"
             placeholder="Enter last name"
-            className="mt-4"
+            className="mt-4 w-full"
             {...register('client.lastName', { required: true })}
           />
           {errors.client?.lastName && <p className="text-red-500 text-sm">Last name is required</p>}
@@ -93,7 +93,7 @@ const GenContract = () => {
           <Input
             id="client.company"
             type="text"
-            className="mt-4"
+            className="mt-4 w-full"
             placeholder="Enter company name (optional)"
             {...register('client.company')}
           />
@@ -105,7 +105,7 @@ const GenContract = () => {
           <Textarea
             id="description"
             placeholder="Enter description"
-            className="mt-4"
+            className="mt-4 w-full"
             rows={5}
             {...register('description', { required: true })}
           />
