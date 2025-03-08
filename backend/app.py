@@ -7,6 +7,11 @@ from flask_pymongo import PyMongo
 import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from blueprints.render import render_bp
+from blueprints.summarization import summarization_bp
+from db_helpers import get_user_by_id, update_user_documents
+
+
 uri = "mongodb+srv://matthewru07:hU2b3yphXGxhXykY@hm-contracts.s1zza.mongodb.net/?retryWrites=true&w=majority&appName=hm-contracts"
 
 
@@ -14,6 +19,9 @@ app = Flask(__name__)
 CORS(app)
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
+# Create a global reference to the MongoDB collection
+db = client.get_database("hm-contracts")  # Get the default database
+users_collection = db['users']
 # Send a ping to confirm a successful connection
 try:
     client.admin.command('ping')
@@ -22,25 +30,7 @@ except Exception as e:
     print(e)
     
 # Import the blueprint from render.py
-from blueprints.render import render_bp
-from blueprints.summarization import summarization_bp
 
-@app.route('/test_connection')
-def test_connection():
-    try:
-        # Ping the database
-        client.db.command('ping')
-        # Try to get collections list
-        collection_names = client.db.list_collection_names()
-        return {
-            "status": "Connected successfully to MongoDB Atlas",
-            "collections": collection_names
-        }
-    except Exception as e:
-        return {
-            "status": "Failed to connect to MongoDB Atlas",
-            "error": str(e)
-        }
 
 @app.route('/', methods=['GET'])
 def home():

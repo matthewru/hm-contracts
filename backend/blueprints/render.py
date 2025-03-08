@@ -3,9 +3,11 @@ import tempfile
 import subprocess
 from flask import Blueprint, render_template, request, jsonify
 import json
-
 from gemini.create import gen_latex
 from scripts.make4ht import convert_latex_to_html
+from db_helpers import get_user_by_id, update_user_documents
+
+
 
 # Create a Blueprint for the render functionality
 render_bp = Blueprint('render_bp', __name__)
@@ -14,13 +16,26 @@ render_bp = Blueprint('render_bp', __name__)
 def render_contract():
 
     # temp variables
-    admin_first = "Jill"
-    admin_last = "Bill"
-    admin_company = "Jill Bill's Bakery"
 
     prompt = request.get_json()
     if not prompt:
         return jsonify({'error': 'Invalid JSON data'}), 400
+    
+    #   Find user_id from the prompt payload
+    user_id = prompt.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+    
+    user = get_user_by_id(user_id)  # Use the imported function to get user from DB
+    # print(user_id)
+    print("LWEIFPWEI", user)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    admin_first = user.get('firstName')
+    admin_last = user.get('lastName')
+    admin_company = user.get('company')
+
     # Generate the LaTeX string using your invoice template
     max_attempts = 3
     contract_latex = None
@@ -50,7 +65,11 @@ def render_contract():
             with open(output_html_path, "r", encoding="utf-8") as f:
                 html_content = f.read()
             
-            print(html_content)
+            update_result = update_user_documents(user_id, html_content)
+            if update_result:
+                return jsonify({'message': 'Document added successfully', 'document': html_content}), 200
+            else:
+                return jsonify({'error': 'Failed to update the document list'}), 500
             return html_content
         except subprocess.CalledProcessError as e:
             print(f"TeX4ht conversion failed: {e.stderr}")
