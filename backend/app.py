@@ -1,16 +1,21 @@
-from flask import Flask, jsonify
+import os
+import tempfile
+import subprocess
+from flask import Flask, render_template, request
 from flask_cors import CORS
 
+# Import the blueprint from render.py
+from render import render_bp
+
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend communication
+CORS(app)
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
-    return jsonify({'message': 'Flask backend is running!'})
+    return {"message": "Flask backend is running!"}
 
-@app.route('/api/data')
-def get_data():
-    return jsonify({'data': 'Hello from Flask!'})
+# Register the blueprint so that its routes (like /render) become available
+app.register_blueprint(render_bp)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)  # Runs on localhost:5000
+    app.run(debug=True, port=5001)
