@@ -14,6 +14,10 @@ const ViewContract = () => {
   // State to hold split pages
   const [pages, setPages] = useState<string[]>([]);
 
+  // Simplified chat state
+  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
+  const [inputMessage, setInputMessage] = useState('');
+
   // Simulate fetching rendered LaTeX content from the backend
   useEffect(() => {
     // This is example content with a page break marker.
@@ -81,6 +85,20 @@ const ViewContract = () => {
     }
   }, [latexContent]);
 
+  // Simplified message handler - just returns a fixed message
+  const handleSendMessage = () => {
+    if (!inputMessage) return;
+    
+    // Add user message
+    setMessages(prev => [...prev, 
+      { role: 'user', content: inputMessage },
+      { role: 'assistant', content: 'This is a fixed response message for testing purposes.' }
+    ]);
+    
+    // Clear input
+    setInputMessage('');
+  };
+
   const handlePrint = useReactToPrint({
     contentRef: printRef,
     documentTitle: 'Contract'
@@ -114,7 +132,9 @@ const ViewContract = () => {
         </header>
 
         {/* Contract Pages Container */}
-        <div className="w-full flex-1 overflow-y-auto overflow-x-hidden flex justify-center">
+        <div 
+          className="w-full flex-1 overflow-y-auto overflow-x-hidden flex justify-center"
+        >
           <div ref={printRef} className="flex flex-col items-center gap-8 w-full max-w-[900px] py-4 px-8">
             {pages.map((page, index) => (
               <div
@@ -176,8 +196,19 @@ const ViewContract = () => {
           </div>
 
           {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-4">
-            {/* Add your chat messages here */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.map((message, index) => (
+              <div 
+                key={index}
+                className={`p-3 rounded-lg ${
+                  message.role === 'user' 
+                    ? 'bg-blue-100 ml-auto' 
+                    : 'bg-gray-100'
+                } max-w-[80%]`}
+              >
+                {message.content}
+              </div>
+            ))}
           </div>
 
           {/* Chat Input */}
@@ -185,10 +216,13 @@ const ViewContract = () => {
             <div className="flex gap-2">
               <input
                 type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Type your message..."
                 className="flex-1 p-2 border border-gray-300 rounded-md"
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               />
-              <Button>Send</Button>
+              <Button onClick={handleSendMessage}>Send</Button>
             </div>
           </div>
         </div>
