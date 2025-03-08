@@ -1,5 +1,6 @@
 "use client"
 
+import { useAuth0 } from "@auth0/auth0-react";
 import GenContract from './generate_contract/page';
 import React, { useState } from 'react';
 import { 
@@ -31,14 +32,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
-  const user = {
-    name: "Jane Doe",
-    email: "jane.doe@example.com",
-    avatar: "/api/placeholder/64/64",
-    role: "Administrator"
-  };
+  const { logout, user: auth0User, isAuthenticated } = useAuth0();
+  
+  // Debug log to see what's coming from Auth0
+  console.log("Auth0 user data:", auth0User);
+  console.log("Is authenticated:", isAuthenticated);
+  
+  // Use Auth0 user if authenticated, otherwise use demo user
+  const user = isAuthenticated && auth0User ? 
+    {
+      name: auth0User.name || "Unknown Name",
+      email: auth0User.email || "Unknown Email",
+      picture: auth0User.picture || "/placeholder-avatar.png"
+    } : 
+    {
+      name: "Sharan Subramanian",
+      email: "sharan@hello.com",
+      picture: "/placeholder-avatar.png"
+    };
 
   const sampleContracts = [
     {id: 0, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Completed"},
@@ -82,6 +96,25 @@ export default function HomePage() {
     }
   };
 
+  const handleLogout = () => {
+    // First attempt Auth0 logout
+    logout({ 
+      logoutParams: {
+        returnTo: 'http://localhost:3000/login'
+      },
+      // This is a fallback in case Auth0 logout fails
+      onRedirect: () => {
+        // Force redirect to login page
+        window.location.href = 'http://localhost:3000/login';
+      }
+    });
+    
+    // As a backup, also manually redirect after a short delay
+    setTimeout(() => {
+      window.location.href = 'http://localhost:3000/login';
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -89,36 +122,43 @@ export default function HomePage() {
           {/* Profile corner (top left) */}
           <div className="flex items-center space-x-4">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              <AvatarImage src={user?.picture} alt={user?.name} />
+              <AvatarFallback>{user?.name?.split(' ').map(n => n[0]).join('')}</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-medium text-lg">{user.name}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{user.role}</p>
+              <h3 className="font-medium text-lg">{user?.name}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
             </div>
           </div>
           
-          {/* Button (top right) */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Generate Document
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-xl">
-              <DialogHeader>
-                <DialogTitle></DialogTitle>
-                <DialogDescription>
-                </DialogDescription>
-              </DialogHeader>
-              <GenContract></GenContract>
-              <DialogFooter>
-              </DialogFooter>
-            </DialogContent>
+          {/* Buttons (top right) */}
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
             
-          </Dialog>
-          
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Generate Document
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-xl">
+                <DialogHeader>
+                  <DialogTitle></DialogTitle>
+                  <DialogDescription>
+                  </DialogDescription>
+                </DialogHeader>
+                <GenContract></GenContract>
+                <DialogFooter>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </header>
         
         <Card>
