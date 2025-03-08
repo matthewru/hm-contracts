@@ -55,8 +55,4 @@ def modify_latex(context, focus, message):
         )
     )
     
-    # Write the output to a LaTeX file before returning it
-    # with open("workingFiles/output.tex", "w") as f:
-    #     f.write(output)
-    
     return output

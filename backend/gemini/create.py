@@ -54,7 +54,4 @@ def gen_latex(description, admin_first, admin_last, admin_company, document_type
         )
     )
     
-    with open("workingFiles/output.tex", "w") as f:
-        f.write(output)
-    
     return output
