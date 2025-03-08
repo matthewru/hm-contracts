@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Import the blueprint from render.py
-from render import render_bp
+from blueprints.render import render_bp
 from blueprints.summarization import summarization_bp
 from blueprints.modify import modify_bp
 
