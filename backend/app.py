@@ -6,6 +6,8 @@ from flask_cors import CORS
 
 # Import the blueprint from render.py
 from render import render_bp
+from blueprints.summarization import summarization_bp
+from blueprints.modify import modify_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -16,6 +18,8 @@ def home():
 
 # Register the blueprint so that its routes (like /render) become available
 app.register_blueprint(render_bp)
+app.register_blueprint(summarization_bp)
+app.register_blueprint(modify_bp)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
