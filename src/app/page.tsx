@@ -1,4 +1,5 @@
 "use client"
+
 import GenContract from './generate_contract/page';
 import React, { useState } from 'react';
 import { 
@@ -31,9 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 
-
-
-export default function Home() {
+export default function HomePage() {
   const user = {
     name: "Jane Doe",
     email: "jane.doe@example.com",
@@ -182,3 +181,4 @@ export default function Home() {
     </div>
   );
 }
+
