@@ -1,7 +1,8 @@
 import os
 import tempfile
 import subprocess
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
+import json
 
 from gemini.create import gen_latex
 
@@ -10,18 +11,25 @@ render_bp = Blueprint('render_bp', __name__)
 
 @render_bp.route('/render', methods=['GET', 'POST'])
 def render_contract():
+
+    # temp variables
+    admin_first = "Jill"
+    admin_last = "Bill"
+    admin_company = "Jill Bill's Bakery"
+
     if request.method == 'POST':
-        prompt = request.form.get('prompt', '')
+        prompt = request.get_json()
+        if not prompt:
+            return jsonify({'error': 'Invalid JSON data'}), 400
 
         # Generate the LaTeX string using your invoice template
-        # TODO: UPDATE TO INCLUDE PARAMS
-        # TODO: 
         max_attempts = 3
         contract_latex = None
 
         for attempt in range(max_attempts):
             try:
-                contract_latex = gen_latex()
+                # TODO: Implement calling the API with modify message in the modify API call
+                contract_latex = gen_latex(prompt.get('description'), admin_first, admin_last, admin_company, prompt.get('doctype'), prompt.get('client', {}).get('firstName'), prompt.get('client', {}).get('lastName'), prompt.get('client', {}).get('company') if prompt.get('client', {}).get('company') else None, prompt.get('modifyMessage') if prompt.get('modifyMessage') else None, prompt.get('oldLatex') if prompt.get('modifyMessage') else None)
                 break
             except Exception as e:
                 # debugging statement
