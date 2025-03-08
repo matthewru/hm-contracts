@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-summarization_bp = Blueprint('summarization_bp', __name__, url_prefix='/api')
+summarization_bp = Blueprint('summarization_bp', __name__)
 
 @summarization_bp.route('/summarize', methods = ['POST'])
 def summarize_clause_api():

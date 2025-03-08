@@ -2,33 +2,33 @@ from google import genai
 from google.genai import types
 from datetime import datetime
 import re
+import asyncio
 
 def extract_latex(text):
     matches = re.findall(r"```latex\s*(.*?)\s*```", text, re.DOTALL)
     return matches[0] if matches else text
 
-# modify_message = message passed to ai for modification
-# old_latex = document before modification
-def gen_latex(description, admin_first, admin_last, admin_company, document_type, client_first, client_last, client_company = None):
+async def async_modify_latex(context, focus, message):
     date = datetime.today()
 
     client = genai.Client(api_key="AIzaSyChp7kIwWx_fA_QEENcIgWCbGrrTNp96-4")
 
     instruction = (
-        "My company name should be in large bold font at the top. "
+        "You are to only modify the LaTeX code that is directly related to the focused content. "
         "You are to output only LaTeX code with no explanation. "
-        "Always output enough LaTeX to fill at least three quarters of a page."
+    ) if focus != None else (
+        "You are to only modify the LaTeX code that is directly related to the changes desired. "
+        "You are to output only LaTeX code with no explanation. "
     )
 
     content = (
-        f"Make me a basic {document_type} template for a small business based on the following info: "
-        f"My information: name = {admin_first} {admin_last}, company = {admin_company}. "
-        f"Client information: name = {client_first} {client_last}{', company = ' + client_company if client_company else ', no client company is provided, assume this is for an individual'}. "
-        f"Date: {date}. "
-        f"Additional description: {description}."
+        f"The LaTeX code you are given is: {context}. "
+        f"The user wants you to implement the following changes: {message}. "
+        f"The specific part of the document they are referencing is {focus}."
+    ) if focus != None else (
+        f"The LaTeX code you are given is: {context}. "
+        f"The user wants you to implement the following changes: {message}."
     )
-
-    print(content)
 
     response = client.models.generate_content(
         model="gemini-2.0-flash",
@@ -37,7 +37,26 @@ def gen_latex(description, admin_first, admin_last, admin_company, document_type
     )
 
     working_text = response.text
-
     working_text = extract_latex(working_text)
-
     return working_text
+
+# This function handles the event loop setup
+def modify_latex(context, focus, message):
+    # Create a new event loop for this thread if needed
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    
+    output = loop.run_until_complete(
+        async_modify_latex(
+            context, focus, message
+        )
+    )
+    
+    # Write the output to a LaTeX file before returning it
+    # with open("workingFiles/output.tex", "w") as f:
+    #     f.write(output)
+    
+    return output
