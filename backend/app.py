@@ -10,7 +10,6 @@ CORS(app)
 # Import the blueprint from render.py
 from blueprints.render import render_bp
 from blueprints.summarization import summarization_bp
-from blueprints.modify import modify_bp
 
 @app.route('/', methods=['GET'])
 def home():
