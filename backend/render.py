@@ -52,7 +52,7 @@ def render_contract():
             with open(html_file, "r") as f:
                 html_content = f.read()
 
-        return render_template('contract_result.html', content=html_content)
+        return render_template('', content=html_content)
 
     # For GET requests, show the form
     return render_template('contract_form.html')

@@ -1,4 +1,5 @@
-import GenContract from "@/components/generate_contract";
+import GenContract from "@/app/generate_contract";
+import ViewContract from "@/app/view_contract";
 
 export default function Home() {
   return (

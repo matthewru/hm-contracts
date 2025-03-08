@@ -10,7 +10,7 @@ from blueprints.summarization import summarization_bp
 from blueprints.modify import modify_bp
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["http://localhost:3000"])
 
 @app.route('/', methods=['GET'])
 def home():
