@@ -29,7 +29,7 @@ def render_contract():
         for attempt in range(max_attempts):
             try:
                 # TODO: Implement calling the API with modify message in the modify API call
-                contract_latex = gen_latex(prompt.get('description'), admin_first, admin_last, admin_company, prompt.get('doctype'), prompt.get('client', {}).get('firstName'), prompt.get('client', {}).get('lastName'), prompt.get('client', {}).get('company') if prompt.get('client', {}).get('company') else None)
+                contract_latex = gen_latex(prompt.get('description'), admin_first, admin_last, admin_company, prompt.get('doctype'), prompt.get('client', {}).get('firstName'), prompt.get('client', {}).get('lastName'), prompt.get('client', {}).get('company') if prompt.get('client', {}).get('company') else None, prompt.get('modifyMessage') if prompt.get('modifyMessage') else None, prompt.get('oldLatex') if prompt.get('modifyMessage') else None)
                 break
             except Exception as e:
                 # debugging statement
@@ -39,20 +39,33 @@ def render_contract():
                     error_message = "An error occurred while generating the document. Please try again."
                     return render_template('contract_result.html', error_message=error_message)
 
-        # Write the LaTeX to a temporary file and convert to HTML using pandoc
+        # Write the LaTeX to a temporary file and convert to HTML using tex4ht
         with tempfile.TemporaryDirectory() as tmpdir:
             tex_file = os.path.join(tmpdir, "contract.tex")
-            html_file = os.path.join(tmpdir, "contract.html")
-
+            
+            # Write the LaTeX content to the temporary file
             with open(tex_file, "w") as f:
                 f.write(contract_latex)
-
-            subprocess.run(["pandoc", "-f", "latex", "-t", "html", "-s", tex_file, "-o", html_file], check=True)
-
-            with open(html_file, "r") as f:
-                html_content = f.read()
-
-        return html_content
+            
+            # Run make4ht to convert LaTeX to HTML5 with MathJax
+            try:
+                subprocess.run(["make4ht", tex_file, "mathjax"], 
+                             check=True, 
+                             cwd=tmpdir,
+                             capture_output=True,
+                             text=True)
+                
+                # Read the generated HTML file
+                html_file = os.path.join(tmpdir, "contract.html")
+                with open(html_file, "r") as f:
+                    html_content = f.read()
+                
+                return html_content
+                
+            except subprocess.CalledProcessError as e:
+                print(f"TeX4ht conversion failed: {e.stderr}")
+                return render_template('contract_result.html', 
+                                     error_message="Failed to convert document to HTML")
 
     # For GET requests, show the form
     return render_template('contract_form.html')
