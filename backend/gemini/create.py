@@ -55,7 +55,7 @@ def gen_latex(description, admin_first, admin_last, admin_company, document_type
     )
     
     # Write the output to a LaTeX file before returning it
-    with open("workingFiles/output.tex", "w") as f:
-        f.write(output)
+    # with open("workingFiles/output.tex", "w") as f:
+    #     f.write(output)
     
     return output
