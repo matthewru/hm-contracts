@@ -24,7 +24,7 @@ const GenContract = () => {
   const onSubmit: SubmitHandler<FormData> = (data) => {
     const jsonData = {
       user_id: "auth0|67cc89198ab7ffc6de02365c",
-      subject: data.doctype,
+      doctype: data.doctype,
       client: {
         firstName: data.client.firstName,
         lastName: data.client.lastName,

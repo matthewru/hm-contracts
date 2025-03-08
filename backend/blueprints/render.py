@@ -26,6 +26,12 @@ def render_contract():
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
     
+    doctype = prompt.get('doctype')
+    client_info = prompt.get('client')
+    client_first_name = client_info.get('firstName')
+    client_last_name = client_info.get('lastName')
+    client_company = client_info.get('company')
+    
     user = get_user_by_id(user_id)  # Use the imported function to get user from DB
     # print(user_id)
     print("LWEIFPWEI", user)
@@ -65,9 +71,15 @@ def render_contract():
             with open(output_html_path, "r", encoding="utf-8") as f:
                 html_content = f.read()
             
-            update_result = update_user_documents(user_id, html_content)
+            doc_payload = {"content": html_content, 
+                           "doctype": doctype,
+                           "client": client_info}
+            
+            update_result = update_user_documents(user_id, doc_payload)
             if update_result:
-                return jsonify({'message': 'Document added successfully', 'document': html_content}), 200
+                return jsonify({'message': 'Document added successfully', 'document': {"content": html_content,
+                                                                                       "doctype": doctype,
+                                                                                       "client": client_info}}), 200
             else:
                 return jsonify({'error': 'Failed to update the document list'}), 500
             return html_content
