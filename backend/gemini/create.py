@@ -27,8 +27,6 @@ async def async_gen_latex(description, admin_first, admin_last, admin_company, d
         f"Additional description: {description}."
     )
 
-    print(content)
-
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         config=types.GenerateContentConfig(system_instruction=instruction),
@@ -48,11 +46,16 @@ def gen_latex(description, admin_first, admin_last, admin_company, document_type
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
     
-    # Run the async function and return its result
-    return loop.run_until_complete(
+    output = loop.run_until_complete(
         async_gen_latex(
             description, admin_first, admin_last, admin_company, 
             document_type, client_first, client_last, client_company,
             modify_message, old_latex
         )
     )
+    
+    # Write the output to a LaTeX file before returning it
+    with open("workingFiles/output.tex", "w") as f:
+        f.write(output)
+    
+    return output
