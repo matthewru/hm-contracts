@@ -1,0 +1,28 @@
+body {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+td, th {
+    border: 1px solid #ddd;
+    padding: 8px;
+} 
