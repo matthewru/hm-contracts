@@ -23,49 +23,64 @@ const ViewContract = () => {
     setLatexContent(storedContent);
   }, []);
 
-  // When latexContent updates, split it into pages by a defined marker
-  useEffect(() => {
-    if (latexContent) {
-      // Calculate approximate characters per page (based on standard margins and font size)
-      const charsPerPage = 3000; // This can be adjusted based on your font size and content
+  // When latexContent updates, split it into pages using actual rendered heights
+useEffect(() => {
+  if (latexContent) {
+    // Create a temporary container for measuring content.
+    const tempContainer = document.createElement('div');
+    // Style it so it renders off-screen but still uses page layout rules.
+    Object.assign(tempContainer.style, {
+      position: 'absolute',
+      top: '0',
+      left: '-9999px',
+      width: '900px', // same as your page container's max width
+      visibility: 'hidden',
+    });
+    document.body.appendChild(tempContainer);
+    tempContainer.innerHTML = latexContent;
 
-      // Split by explicit page breaks first
-      const splitByMarker = latexContent.split('<!--PAGE_BREAK-->');
-      
-      const processedPages = splitByMarker.flatMap(content => {
-        // If content length exceeds our target page size
-        if (content.length > charsPerPage) {
-          // Try to split at natural break points
-          const sections = content.split(/(?=<h[1-6]>)|(?=<div)|(?=\n\n)/g);
-          
-          let currentPage = '';
-          const pages = [];
-          
-          sections.forEach(section => {
-            if ((currentPage + section).length > charsPerPage) {
-              if (currentPage) {
-                pages.push(currentPage);
-                currentPage = section;
-              } else {
-                pages.push(section);
-              }
-            } else {
-              currentPage += section;
-            }
-          });
-          
-          if (currentPage) {
-            pages.push(currentPage);
-          }
-          
-          return pages;
+    // Define the available page height in pixels.
+    // Adjust this value based on your page size, margins, and scaling.
+    const targetPageHeight = 700;
+    let currentPageHTML = '';
+    let currentHeight = 0;
+    const newPages: string[] = [];
+
+    // Iterate over the children of the temporary container.
+    // We use 'children' to only consider element nodes.
+    Array.from(tempContainer.children).forEach((child) => {
+      // Clone the child so we can measure it independently.
+      const measuringChild = child.cloneNode(true) as HTMLElement;
+      tempContainer.appendChild(measuringChild);
+      const elementHeight = measuringChild.offsetHeight;
+      tempContainer.removeChild(measuringChild);
+
+      // If adding this element would exceed the target height,
+      // finalize the current page and start a new one.
+      if (currentHeight + elementHeight > targetPageHeight) {
+        if (currentPageHTML.trim().length > 0) {
+          newPages.push(currentPageHTML);
         }
-        return [content];
-      }).filter(page => page.trim().length > 0);
+        // Start a new page with the current child
+        currentPageHTML = child.outerHTML;
+        currentHeight = elementHeight;
+      } else {
+        currentPageHTML += child.outerHTML;
+        currentHeight += elementHeight;
+      }
+    });
 
-      setPages(processedPages);
+    // If there is leftover content, add it as a final page.
+    if (currentPageHTML.trim().length > 0) {
+      newPages.push(currentPageHTML);
     }
-  }, [latexContent]);
+
+    // Clean up the temporary container.
+    document.body.removeChild(tempContainer);
+
+    setPages(newPages);
+  }
+}, [latexContent]);
 
   // Simplified message handler - just returns a fixed message
   const handleSendMessage = async () => {
@@ -151,41 +166,41 @@ const ViewContract = () => {
         </header>
 
         {/* Contract Pages Container */}
+<div 
+  className="w-full flex-1 overflow-y-auto overflow-x-hidden flex justify-center"
+>
+  <div ref={printRef} className="flex flex-col items-center gap-8 py-4 px-8">
+    {pages.map((page, index) => (
+      <div
+        key={index}
+        style={{ 
+          width: '8.5in',
+          height: '11in',
+          margin: '0 auto',
+          padding: '8%',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: 'white',
+          position: 'relative',
+          border: '1px solid #e0e0e0'
+        }}
+        className="shadow-xl relative"
+      >
         <div 
-          className="w-full flex-1 overflow-y-auto overflow-x-hidden flex justify-center"
-        >
-          <div ref={printRef} className="flex flex-col items-center gap-8 w-full max-w-[900px] py-4 px-8">
-            {pages.map((page, index) => (
-              <div
-                key={index}
-                style={{ 
-                  width: '100%',
-                  aspectRatio: '0.773',
-                  margin: '0 auto',
-                  padding: '8%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  backgroundColor: 'white',
-                  position: 'relative',
-                  border: '1px solid #e0e0e0'
-                }}
-                className="shadow-xl relative"
-              >
-                <div 
-                  dangerouslySetInnerHTML={{ __html: page }}
-                  className="flex flex-col gap-4"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    fontSize: 'min(12pt, 1.5vw)',
-                    lineHeight: '1.5',
-                    overflow: 'hidden'
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+          dangerouslySetInnerHTML={{ __html: page }}
+          className="flex flex-col gap-4"
+          style={{
+            width: '100%',
+            height: '100%',
+            fontSize: 'min(12pt, 1.5vw)',
+            lineHeight: '1.5',
+            overflow: 'hidden'
+          }}
+        />
+      </div>
+    ))}
+  </div>
+</div>
 
         {/* Export Button */}
         <div className="p-8">
