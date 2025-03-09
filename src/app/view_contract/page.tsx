@@ -156,40 +156,12 @@ const ViewContract = () => {
     documentTitle: 'Contract'
   });
 
-  useEffect(() => {
-    const handleMouseUp = (e: MouseEvent) => {
-      console.log('handleMouseUp triggered', e);
-      // Only trigger if chat is closed
-      if (!isChatOpen) {
-        const selection = window.getSelection();
-        if (selection && selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0);
-          if (
-            printRef.current &&
-            printRef.current.contains(range.startContainer) &&
-            printRef.current.contains(range.endContainer)
-          ) {
-            // Entire selection is inside the document.
-            setMouseCoords({ x: e.clientX + window.scrollX, y: e.clientY + window.scrollY });
-            setSelectedText(selection.toString());
-            setShowLearnMore(true);
-          } else {
-            setShowLearnMore(false);
-          }
-        }
-      }
-    };
-
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => document.removeEventListener('mouseup', handleMouseUp);
-  }, [isChatOpen]);
-
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-white justify-center">
       {/* Contract Viewer Section */}
       <div 
         className={`flex-1 flex flex-col transition-all duration-300 ${
-          isChatOpen ? 'pr-[40%]' : 'pr-0'
+          isChatOpen ? 'pr-[77%]' : 'pr-0'
         }`}
       >
         {/* Header */}
@@ -255,39 +227,6 @@ const ViewContract = () => {
               </div>
             ))}
           </div>
-          {showLearnMore && (
-            <Button
-              style={{ position: 'absolute', left: mouseCoords.x, top: mouseCoords.y }}
-              onClick={async () => {
-                console.log('Button clicked, starting API call');
-                try {
-                  const response = await fetch('http://localhost:5001/summarize', {
-                    method: 'POST',
-                    headers: {
-                      'Content-type': 'application/json'
-                    },
-                    body: JSON.stringify({ selection: selectedText })
-                  });
-                  const { text } = await response.json();
-                  
-                  setBubbles((prev) => [
-                    ...prev,
-                    {
-                      id: Date.now().toString(),  // or use a uuid
-                      text: text,
-                      top: mouseCoords.y,        // or some logic to stack them
-                      show: true
-                    }
-                  ]);
-                } catch (err) {
-                  console.error('An error has been generated', err);
-                }
-                setShowLearnMore(false);
-              }}
-            >
-              Learn More
-            </Button>
-          )}
         </div>
 
         {bubbles.map((bubble) => (
