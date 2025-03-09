@@ -33,9 +33,6 @@ const ViewContract = () => {
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
   const [inputMessage, setInputMessage] = useState('');
 
-  const [selectedText, setSelectedText] = useState<string>('');
-  const [showLearnMore, setShowLearnMore] = useState<boolean>(false);
-  const [mouseCoords, setMouseCoords] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
   useEffect(() => {
@@ -122,13 +119,16 @@ const ViewContract = () => {
       }
     } 
 
+    const holdInput = inputMessage;
+    setInputMessage('');
+
     try {
       const response = await fetch('http://localhost:5001/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: inputMessage, focus: focusedText, context: latexContent })
+        body: JSON.stringify({ message: holdInput, focus: focusedText, context: latexContent, conv_context: messages })
       })
       
       const { latex, html, chat } = await response.json();
@@ -146,9 +146,6 @@ const ViewContract = () => {
         { role: 'assistant', content: 'Unable to generate response. Please try again.' }
       ]);
     }
-    
-    // Clear input
-    setInputMessage('');
   };
 
   const handlePrint = useReactToPrint({
