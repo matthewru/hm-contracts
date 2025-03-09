@@ -1,8 +1,9 @@
 "use client"
 import GenContract from '../generate_contract/page';
 import React, { useState, useEffect } from 'react';
-import { Send } from "lucide-react";  // Import the Send icon
 import { useRouter } from 'next/navigation';
+import SendContractPopup from '@/components/ui/sendcontractpopup';
+
 
 import { 
   Card, 
@@ -101,6 +102,14 @@ const Dashboard = () => {
     localStorage.setItem('contractLatex', contracts[index].latexcontent);
     router.push('/view_contract');
   };
+
+  const handleSendClick = (index: number) => (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevents row click event
+    const contractDistro = user.documents[index]
+
+    console.log(`Sending contract`);
+  };
+  
   
   const itemsPerPage = 12;
   const totalItems = contracts.length;
@@ -192,15 +201,10 @@ const Dashboard = () => {
                     <TableCell className="flex justify-between items-center">
                       {/* Only show the button if the status is "Completed" */}
                       {item.status === "In Progress" && (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => console.log(`Sending contract ${index}`)} // Add send logic here
-                          className="ml-auto"
-                        >
-                          <Send className="h-4 w-4" />
-                        </Button>
-                      )}
+                        <div onClick={(e) => e.stopPropagation()}>  
+                        <SendContractPopup contractId={item.id} htmlContent={item.htmlContent} />
+                      </div>
+  )}
                     </TableCell>
                   </TableRow>
                 ))}

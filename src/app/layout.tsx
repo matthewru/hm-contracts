@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,6 +17,8 @@ export const metadata: Metadata = {
   title: "Contract Management",
   description: "Contract Management System",
 };
+
+
 
 export default function RootLayout({
   children,
