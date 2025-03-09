@@ -9,22 +9,20 @@ def extract_latex(text):
     return matches[0] if matches else text
 
 async def async_modify(context, focus, message):
+    print(f"{context}\n\n\n\n\n\n")
+
     client = genai.Client(api_key="AIzaSyChp7kIwWx_fA_QEENcIgWCbGrrTNp96-4")
 
     instruction = (
-        "You are to only modify the LaTeX code that is directly related to the focused content. "
-        "You are to output only LaTeX code with no explanation. "
+        f"I want you to output LaTeX code with modifications only where specified. The starting code is {context}"
     ) if focus != None else (
-        "You are to only modify the LaTeX code that is directly related to the changes desired. "
-        "You are to output only LaTeX code with no explanation. "
+        f"I want you to output LaTeX code with modifications only where specified. The starting code is {context}"
     )
 
     latex_response_content = (
-        f"The LaTeX code you are given is: {context}. "
         f"The user wants you to implement the following changes: {message}. "
         f"The specific part of the document they are referencing is: {focus}."
     ) if focus != None else (
-        f"The LaTeX code you are given is: {context}. "
         f"The user wants you to implement the following changes: {message}."
     )
 

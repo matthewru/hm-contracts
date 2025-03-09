@@ -10,6 +10,7 @@ const ViewContract = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   
   // State to hold the full rendered LaTeX content (as HTML)
+  const [HTMLContent, setHTMLContent] = useState<string>('');
   const [latexContent, setLatexContent] = useState<string>('');
   // State to hold split pages
   const [pages, setPages] = useState<string[]>([]);
@@ -19,13 +20,15 @@ const ViewContract = () => {
   const [inputMessage, setInputMessage] = useState('');
 
   useEffect(() => {
-    const storedContent = localStorage.getItem('contractHtml') || '';
-    setLatexContent(storedContent);
+    const storedHTML = localStorage.getItem('contractHtml') || '';
+    const storeLatex = localStorage.getItem('contractLatex') || '';
+    setHTMLContent(storedHTML);
+    setLatexContent(storeLatex);
   }, []);
 
-  // When latexContent updates, split it into pages using actual rendered heights
+  // When HTMLContent updates, split it into pages using actual rendered heights
 useEffect(() => {
-  if (latexContent) {
+  if (HTMLContent) {
     // Create a temporary container for measuring content.
     const tempContainer = document.createElement('div');
     // Style it so it renders off-screen but still uses page layout rules.
@@ -37,7 +40,7 @@ useEffect(() => {
       visibility: 'hidden',
     });
     document.body.appendChild(tempContainer);
-    tempContainer.innerHTML = latexContent;
+    tempContainer.innerHTML = HTMLContent;
 
     // Define the available page height in pixels.
     // Adjust this value based on your page size, margins, and scaling.
@@ -80,7 +83,7 @@ useEffect(() => {
 
     setPages(newPages);
   }
-}, [latexContent]);
+}, [HTMLContent]);
 
   // Simplified message handler - just returns a fixed message
   const handleSendMessage = async () => {
@@ -111,13 +114,14 @@ useEffect(() => {
         .then((response) => response.text(), (err) => {
           throw new Error(err.message)
         });
-  
+
+      setLatexContent(response[0])
+      setHTMLContent(response[1])
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: response[1] }
+        { role: 'assistant', content: response[3] }
       ]);
 
-      setLatexContent(response[1]);
     } catch (err) {
       setMessages((prev) => [
         ...prev,

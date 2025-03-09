@@ -6,9 +6,9 @@ from gemini.modify import modify_latex
 from scripts.make4ht import convert_latex_to_html
 # from db_helpers import get_user_by_id, update_user_documents
 
-start_chat_bp = Blueprint('start_chat_bp', __name__)
+chat_bp = Blueprint('chat_bp', __name__)
 
-@start_chat_bp.route('/chat', methods = ['POST'])
+@chat_bp.route('/chat', methods = ['POST'])
 def start_chat():
     data = request.get_json()
     if not data:
@@ -24,34 +24,37 @@ def start_chat():
     for attempt in range(max_attempts):
         try:
             response_latex, response_chat = modify_latex(context, focus, message)
+
+            print(response_latex)
+            print(response_chat)
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tex_file = os.path.join(tmpdir, "contract.tex")
+                with open(tex_file, "w", encoding="utf-8") as f:
+                    f.write(response_latex)
+
+                try:
+                    # Convert the LaTeX file to HTML (with inline CSS) using our module.
+                    output_html_path = os.path.join(tmpdir, "contract.html")
+                    convert_latex_to_html(tex_file, output_html_path, workdir=tmpdir)
+
+                    # Read the generated HTML content
+                    with open(output_html_path, "r", encoding="utf-8") as f:
+                        response_html = f.read()
+
+                    # doc_payload = {"content": html_content, 
+                    #                "doctype": "",
+                    #                "client": ""} # TODO: MATTHEW
+
+                    # update_user_documents(user_id, doc_payload)
+                    return response_latex, response_html, response_chat
+                except subprocess.CalledProcessError as e:
+                    print(f"TeX4ht conversion failed: {e.stderr}")
+                    return render_template('contract_result.html', error_message="Failed to convert document to HTML")
         except Exception as e:
             print(f"Attempt {attempt + 1} failed; error message: {e}")
 
             if attempt == max_attempts - 1:
                 error_message = "Unable to modify document. Please try again."
-                return response_latex, response_chat
-            
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tex_file = os.path.join(tmpdir, "contract.tex")
-        with open(tex_file, "w", encoding="utf-8") as f:
-            f.write(response_latex)
-        
-        try:
-            # Convert the LaTeX file to HTML (with inline CSS) using our module.
-            output_html_path = os.path.join(tmpdir, "contract.html")
-            convert_latex_to_html(tex_file, output_html_path, workdir=tmpdir)
-            
-            # Read the generated HTML content
-            with open(output_html_path, "r", encoding="utf-8") as f:
-                html_content = f.read()
-            
-            # doc_payload = {"content": html_content, 
-            #                "doctype": "",
-            #                "client": ""} # TODO: MATTHEW
-            
-            # update_user_documents(user_id, doc_payload)
-            return response_latex, response_chat
-        except subprocess.CalledProcessError as e:
-            print(f"TeX4ht conversion failed: {e.stderr}")
-            return render_template('contract_result.html', error_message="Failed to convert document to HTML")
+                return response_latex, response_html, response_chat
 
