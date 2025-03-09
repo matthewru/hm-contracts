@@ -85,8 +85,6 @@ useEffect(() => {
   // Simplified message handler - just returns a fixed message
   const handleSendMessage = async () => {
     if (!inputMessage) return;
-    
-    const runStart = (messages.length === 0);
 
     setMessages((prev) => [
       ...prev,
@@ -102,31 +100,27 @@ useEffect(() => {
       }
     } 
 
-    if (runStart) {
-      try {
-        const response = await fetch('http://localhost:5001/start_chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ message: inputMessage, focus: focusedText, context: latexContent })
-        })
-          .then((response) => response.text(), (err) => {
-            throw new Error(err.message)
-          });
-    
-        setMessages((prev) => [
-          ...prev,
-          { role: 'assistant', content: response }
-        ]);
-      } catch (err) {
-        setMessages((prev) => [
-          ...prev,
-          { role: 'assistant', content: 'Error: Unable to fetch response from Gemini API.' }
-        ]);
-      }
-    } else {
-      // TODO: create + implement endpoint for chat continuation
+    try {
+      const response = await fetch('http://localhost:5001/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: inputMessage, focus: focusedText, context: latexContent })
+      })
+        .then((response) => response.text(), (err) => {
+          throw new Error(err.message)
+        });
+  
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: response }
+      ]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: 'Error: Unable to fetch response from Gemini API.' }
+      ]);
     }
     
     // Clear input
