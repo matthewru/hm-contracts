@@ -114,8 +114,10 @@ useEffect(() => {
   
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: response }
+        { role: 'assistant', content: response[1] }
       ]);
+
+      setLatexContent(response[1]);
     } catch (err) {
       setMessages((prev) => [
         ...prev,

@@ -8,7 +8,7 @@ def extract_latex(text):
     matches = re.findall(r"```latex\s*(.*?)\s*```", text, re.DOTALL)
     return matches[0] if matches else text
 
-async def async_modify_latex(context, focus, message):
+async def async_modify(context, focus, message):
     client = genai.Client(api_key="AIzaSyChp7kIwWx_fA_QEENcIgWCbGrrTNp96-4")
 
     instruction = (
@@ -19,7 +19,7 @@ async def async_modify_latex(context, focus, message):
         "You are to output only LaTeX code with no explanation. "
     )
 
-    content = (
+    latex_response_content = (
         f"The LaTeX code you are given is: {context}. "
         f"The user wants you to implement the following changes: {message}. "
         f"The specific part of the document they are referencing is: {focus}."
@@ -28,15 +28,35 @@ async def async_modify_latex(context, focus, message):
         f"The user wants you to implement the following changes: {message}."
     )
 
-    response = client.models.generate_content(
+    latex_response = client.models.generate_content(
         model="gemini-2.0-flash",
         config=types.GenerateContentConfig(system_instruction=instruction),
-        contents=content
+        contents=latex_response_content
     )
 
-    working_text = response.text
-    working_text = extract_latex(working_text)
-    return working_text
+    working_latex = latex_response.text
+    working_latex = extract_latex(working_latex)
+
+    chat_response_content = (
+        f"Given the starting latex: {context} "
+        f"your reached the ending latex: {working_latex} "
+        f"by considering the desired changes: {message} "
+        f"and focusing on the part of the document that said: {focus}. "
+        f"Tersely explain what you changed and why."
+    ) if focus != None else (
+        f"Given the starting latex: {context} "
+        f"your reached the ending latex: {working_latex} "
+        f"by considering the desired changes: {message}. "
+        f"Tersely explain what you changed and why."
+    )
+
+    chat_response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=chat_response_content
+    )
+
+    working_chat = chat_response.text
+    return working_latex, working_chat
 
 # This function handles the event loop setup
 def modify_latex(context, focus, message):
@@ -47,10 +67,10 @@ def modify_latex(context, focus, message):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
     
-    output = loop.run_until_complete(
-        async_modify_latex(
+    response_latex, response_chat = loop.run_until_complete(
+        async_modify(
             context, focus, message
         )
     )
     
-    return output
+    return response_latex, response_chat
