@@ -3,6 +3,8 @@ import GenContract from '../generate_contract/page';
 import React, { useState, useEffect } from 'react';
 import { Send } from "lucide-react";
 import { useRouter } from 'next/navigation';
+import SendContractPopup from '@/components/ui/sendcontractpopup';
+
 
 import { 
   Card, 
@@ -81,6 +83,14 @@ const Dashboard = () => {
     localStorage.setItem('contractLatex', contracts[index].latexcontent);
     router.push('/view_contract');
   };
+
+  const handleSendClick = (index: number) => (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevents row click event
+    const contractDistro = user.documents[index]
+
+    console.log(`Sending contract`);
+  };
+  
   
   const itemsPerPage = 12;
   const totalItems = contracts.length;
@@ -172,18 +182,10 @@ const Dashboard = () => {
                     <TableCell className="text-gray-700">{item.date}</TableCell>
                     <TableCell className="flex justify-between items-center">
                       {item.status === "In Progress" && (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            console.log(`Sending contract ${index}`);
-                          }}
-                          className="ml-auto border-[#75e782] text-[#5bc566] hover:bg-[#75e782]/10 hover:text-[#5bc566]"
-                        >
-                          <Send className="h-4 w-4" />
-                        </Button>
-                      )}
+                        <div onClick={(e) => e.stopPropagation()}>  
+                        <SendContractPopup contractId={item.id} htmlContent={item.htmlContent} />
+                      </div>
+  )}
                     </TableCell>
                   </TableRow>
                 ))}

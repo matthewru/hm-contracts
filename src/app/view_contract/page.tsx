@@ -38,6 +38,7 @@ const ViewContract = () => {
   useEffect(() => {
     const storedHTML = localStorage.getItem('contractHtml') || '';
     const storeLatex = localStorage.getItem('contractLatex') || '';
+    console.log(storedHTML)
     setHTMLContent(storedHTML);
     setLatexContent(storeLatex);
   }, []);
