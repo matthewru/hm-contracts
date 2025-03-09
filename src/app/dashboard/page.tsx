@@ -1,6 +1,6 @@
 "use client"
 import GenContract from '../generate_contract/page';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -32,12 +32,48 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 
 const Dashboard = () => {
-    const user = {
-    name: "Jane Doe",
-    email: "jane.doe@example.com",
-    avatar: "/api/placeholder/64/64",
-    role: "Administrator"
-  };
+
+  const userID = "auth0|67cc89198ab7ffc6de02365c"
+  const [user, setUser] = useState<any | null>(null);  // Use proper type
+  const [error, setError] = useState<string | null>(null);  // Error state
+  const [currentPage, setCurrentPage] = useState(1);
+
+
+  useEffect(() => {
+    // Function to fetch user data from the API
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`http://localhost:5001/user/${userID}`);
+        if (!response.ok) {
+          throw new Error('User not found');
+        }
+        const data = await response.json();
+        setUser(data);
+      } catch (err: any) {
+        setError(err.message);
+      }
+    };
+
+    if (userID) {
+      fetchUserData();
+    }
+  }, [userID]);
+
+  console.log(user)
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+  //   const user = {
+  //   name: "Jane Doe",
+  //   email: "jane.doe@example.com",
+  //   avatar: "/api/placeholder/64/64",
+  //   role: "Administrator"
+  // };
+  const contracts = user.documents
 
   const sampleContracts = [
     {id: 0, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Completed"},
@@ -55,14 +91,14 @@ const Dashboard = () => {
     {id: 12, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
   ]
 
-  const [currentPage, setCurrentPage] = useState(1);
+  
   const itemsPerPage = 12;
-  const totalItems = sampleContracts.length;
+  const totalItems = contracts.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sampleContracts.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = contracts.slice(indexOfFirstItem, indexOfLastItem);
 
   // Page navigation
   const goToNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
@@ -88,12 +124,12 @@ const Dashboard = () => {
           {/* Profile corner (top left) */}
           <div className="flex items-center space-x-4">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
+              <AvatarFallback>{user.firstName[0] + user.lastName[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-medium text-lg">{user.name}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{user.role}</p>
+              <h3 className="font-medium text-lg">{user.firstName + " " + user.lastName}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Administrator</p>
             </div>
           </div>
           
@@ -137,10 +173,10 @@ const Dashboard = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentItems.map((item) => (
-                  <TableRow key={item.id}>
+                {currentItems.map((item: any, index: number) => (
+                  <TableRow key={index}>
                     <TableCell className="font-medium">{item.doctype}</TableCell>
-                    <TableCell className="font-medium">{item.firstName + " " + item.lastName + ", " + item.company}</TableCell>
+                    <TableCell className="font-medium">{item.client.firstName + " " + item.client.lastName + ", " + item.client.company}</TableCell>
                     <TableCell>
                       <Badge className={getStatusStyles(item.status)}>
                         {item.status}
