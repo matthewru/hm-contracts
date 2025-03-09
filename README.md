@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PaperPilot
 
-## Getting Started
+PaperPilot is a contract management platform designed to streamline document creation, revision, and distribution—empowering small business owners to save time, money, and stress.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Inspiration
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Whether through our own experiences or those of our friends and family, we understand that small business owners often find themselves burdened by an abundance of paperwork they need to draft, revise, and distribute. We set out to develop a solution that does all three in one, simplifying contract management for the modern business owner.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## What It Does
 
-## Learn More
+- **Document Generation:**  
+  Prompt the user for input and automatically generate documents (contracts, invoices, etc.) based on their description.
+  
+- **Seamless Revision:**  
+  Interact directly with our AI to revise the document until it meets your needs.
+  
+- **Effortless Distribution:**  
+  When satisfied, email the document straight from your dashboard.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How We Built It
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Frontend:**  
+  Built with Next.js for a fast, responsive, and modern user interface.
+  
+- **Backend:**  
+  Flask and MongoDB power our backend services.
+  
+- **AI & Models:**  
+  Our model is built around the Gemini API, pretrained using LaTeX templates scraped from the web. We also implemented a Retrieval-Augmented Generation (RAG) architecture to enhance performance and consistency during document revisions.
 
-## Deploy on Vercel
+- **Note:**  
+  You must add your own API keys for Gemini in the configuration files. Ensure you set up the appropriate environment variables or configuration settings before running the application.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## What's Next for PaperPilot
+
+Upcoming features and improvements include:
+- Enhanced security features.
+- Better prompt engineering for improved AI responses.
+- More robust document distribution options.
+
+
+## Installation
+
+### Prerequisites
+
+- Node.js and npm (for the Next.js frontend)
+- Python 3.8+ (for the Flask backend)
+- MongoDB
+- [pip](https://pip.pypa.io/en/stable/)
+- Gemini API access (remember to add your own API keys)
+
+### Setup
+
+1. **Clone the Repository:**
+
+   ```bash
+   git clone https://github.com/yourusername/paperpilot.git
+   cd paperpilot
+   ```
+2. **Frontend Setup (Next.js):**
+
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+3. **Backend Setup (Flask):**
+
+   ```bash
+   cd ../backend
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+4. **Configure Environment Variables:**
+Create a .env file in the backend folder and add your Gemini API key along with other required settings:
+
+  ```bash
+  GEMINI_API_KEY=your_gemini_api_key_here
+  MONGODB_URI=your_mongodb_connection_string
+  SECRET_KEY=your_flask_secret_key
+  ```
+
+5. **Run the Backend:**
+
+   ```bash
+   python app.py
+   ```
+
+## Usage
+- **Upload Documents:**  
+  Upload contracts, invoices, or other documents through the web interface.
+
+- **Preprocess & Annotate:**  
+  Our system cleans, vectorizes, and indexes documents for efficient retrieval. AI-driven annotation can be used for further enhancements.
+
+- **Search & Retrieve:**  
+  Use semantic search to quickly find relevant contract sections.
+
+- **Revise & Distribute:**  
+  Interact with our AI to make revisions, then distribute the final document via email directly from your dashboard.
+
+
+## Contributing
+
+Contributions to PaperPilot are welcome! If you’d like to contribute, please:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Commit your changes (`git commit -m 'Add new feature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a pull request.
+
+
+## License
+
+PaperPilot is released under the MIT License. See [LICENSE](LICENSE) for more information.
