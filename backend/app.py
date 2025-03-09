@@ -10,6 +10,7 @@ from pymongo.server_api import ServerApi
 from blueprints.render import render_bp
 from blueprints.summarization import summarization_bp
 from db_helpers import get_user_by_id, update_user_documents
+from flask import jsonify
 
 
 uri = "mongodb+srv://matthewru07:hU2b3yphXGxhXykY@hm-contracts.s1zza.mongodb.net/?retryWrites=true&w=majority&appName=hm-contracts"
@@ -31,6 +32,20 @@ except Exception as e:
     
 # Import the blueprint from render.py
 
+#Get user info from user_id endpoint
+@app.route('/user/<string:user_id>', methods=['GET'])
+def get_user(user_id):
+    try:
+        # Find the user by user_id
+        user = users_collection.find_one({'user_id': user_id})
+        if user:
+            # Convert MongoDB _id to string (as ObjectId is not JSON serializable)
+            user['_id'] = str(user['_id'])
+            return jsonify(user), 200
+        else:
+            return jsonify({'error': 'User not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/', methods=['GET'])
 def home():
