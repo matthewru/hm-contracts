@@ -1,4 +1,4 @@
-// @ts-ignore
+
 "use client"
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -17,11 +17,8 @@ interface FormData {
   description: string;
 }
 
-interface GenContractProps {
-  userId?: string;
-}
 
-const GenContract = ({ userId }: GenContractProps) => {
+const GenContract = ({ userId }: { userId?: string }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
   const router = useRouter();
 
