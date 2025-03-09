@@ -1,3 +1,5 @@
+'use client';
+
 import Image from "next/image"
 import Link from "next/link"
 
@@ -17,7 +19,7 @@ export default function LandingPage() {
             <Link href="/login">
               <Button variant="ghost">Log in</Button>
             </Link>
-            <Link href="/register">
+            <Link href="/signup">
               <Button>Register</Button>
             </Link>
           </div>
@@ -45,7 +47,7 @@ export default function LandingPage() {
             </ul>
 
             <div className="mt-6 flex flex-wrap items-center gap-4">
-              <Link href="/register">
+              <Link href="/signup">
                 <Button size="lg">Get Started Free</Button>
               </Link>
               <Link href="/login">
