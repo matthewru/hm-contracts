@@ -33,7 +33,7 @@ import { PlusCircle } from "lucide-react";
 
 const Dashboard = () => {
 
-  const userID = 6
+  const userID = "1";
   const [user, setUser] = useState<any | null>(null);  // Use proper type
   const [error, setError] = useState<string | null>(null);  // Error state
   const [currentPage, setCurrentPage] = useState(1);
