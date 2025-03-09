@@ -30,8 +30,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
 
 # vercel
 .vercel
@@ -43,8 +41,6 @@ next-env.d.ts
 node_modules/
 .next/
 out/
-.env
-.env.local
 
 # Python (Flask)
 backend/__pycache__/

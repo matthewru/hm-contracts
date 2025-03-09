@@ -1,4 +1,3 @@
-
 "use client"
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -6,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 interface FormData {
   doctype: string;
@@ -17,13 +17,17 @@ interface FormData {
   description: string;
 }
 
-
 const GenContract = ({ userId }: { userId?: string }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://your-production-api.com';
 
   // Handle form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
+    setIsLoading(true);
+    
     const jsonData = {
       user_id: userId,
       doctype: data.doctype,
@@ -35,7 +39,7 @@ const GenContract = ({ userId }: { userId?: string }) => {
       description: data.description,
     };
 
-    fetch('http://localhost:5001/render', {
+    fetch(`${apiUrl}/render`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +52,10 @@ const GenContract = ({ userId }: { userId?: string }) => {
         localStorage.setItem('contractLatex', data.latex);
         router.push('/view_contract');
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => {
+        console.error('Error:', error);
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -116,12 +123,20 @@ const GenContract = ({ userId }: { userId?: string }) => {
           {errors.description && <p className="text-red-500 text-sm mt-1">Description is required</p>}
         </div>
 
-        {/* Submit Button */}
+        {/* Submit Button with Loading State */}
         <Button 
           type="submit" 
           className="w-full mt-6 bg-[#75e782] text-gray-800 hover:bg-[#5bc566] border-none"
+          disabled={isLoading}
         >
-          Submit
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="w-5 h-5 border-2 border-gray-800 border-t-transparent rounded-full animate-spin mr-2"></div>
+              Generating...
+            </div>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </div>
