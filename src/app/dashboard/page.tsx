@@ -1,7 +1,7 @@
 "use client"
 import GenContract from '../generate_contract/page';
 import React, { useState, useEffect } from 'react';
-import { Send } from "lucide-react";  // Import the Send icon
+import { Send } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
 import { 
@@ -35,13 +35,11 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 
 const Dashboard = () => {
-
-  const [user, setUser] = useState<any | null>(null);  // Use proper type
-  const [error, setError] = useState<string | null>(null);  // Error state
+  const [user, setUser] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const router = useRouter();
-
 
   useEffect(() => {
     let userID: any = null;
@@ -75,28 +73,10 @@ const Dashboard = () => {
   if (!user) {
     return <div>Loading...</div>;
   }
-  const contracts = user.documents
+  const contracts = user.documents;
 
-  
-
-  const sampleContracts = [
-    {id: 0, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Completed"},
-    {id: 1, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 2, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "In Progress"},
-    {id: 3, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 4, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 5, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 6, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 7, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 8, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 9, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 10, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 11, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-    {id: 12, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
-  ]
   const handleRowClick = (index: number) => {
-    
-    console.log("clicked")
+    console.log("clicked");
     localStorage.setItem('contractHtml', contracts[index].htmlcontent);
     localStorage.setItem('contractLatex', contracts[index].latexcontent);
     router.push('/view_contract');
@@ -117,86 +97,89 @@ const Dashboard = () => {
   const getStatusStyles = (status: string) => {
     switch(status) {
       case 'Sent':
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+        return "bg-green-100 text-green-800";
       case 'In Progress':
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+        return "bg-[#75e782]/20 text-[#5bc566]";
       default:
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="min-h-screen bg-white p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="flex justify-between items-center">
           {/* Profile corner (top left) */}
           <div className="flex items-center space-x-4">
-            <Avatar className="h-12 w-12">
-              {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
-              <AvatarFallback>{user.firstName[0] + user.lastName[0]}</AvatarFallback>
+            <Avatar className="h-12 w-12 border-2 border-[#75e782]">
+              <AvatarFallback className="bg-[#75e782]/10 text-gray-700">{user.firstName[0] + user.lastName[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-medium text-lg">{user.firstName + " " + user.lastName}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Administrator</p>
+              <h3 className="font-medium text-lg text-gray-800">{user.firstName + " " + user.lastName}</h3>
+              <p className="text-sm text-gray-500">Administrator</p>
             </div>
           </div>
           
           {/* Button (top right) */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="bg-[#75e782] text-gray-800 hover:bg-[#5bc566] border-none">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Generate Document
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-xl">
-              <DialogHeader>
-                <DialogTitle></DialogTitle>
+            <DialogContent className="sm:max-w-xl border-gray-100 shadow-md">
+              <DialogHeader className="border-b border-gray-100 pb-2">
+                <DialogTitle className="text-gray-800"></DialogTitle>
                 <DialogDescription></DialogDescription>
               </DialogHeader>
-              {user && <GenContract userId={user.user_id} />}  {/* Pass user.id as a prop */}
+              {user && <GenContract userId={user.user_id} />}
               <DialogFooter></DialogFooter>
             </DialogContent>
           </Dialog>
-          
         </header>
         
-        <Card>
+        <Card className="border-gray-100 shadow-sm">
           <CardHeader>
-            <CardTitle>Dashboard</CardTitle>
-            <CardDescription>Manage your documents and clients</CardDescription>
+            <CardTitle className="text-gray-800">Dashboard</CardTitle>
+            <CardDescription className="text-gray-500">Manage your documents and clients</CardDescription>
           </CardHeader>
           
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[25%]">Type</TableHead>
-                  <TableHead className="w-[25%]">Client</TableHead>
-                  <TableHead className="w-[25%]">Status</TableHead>
-                  <TableHead className="w-[25%]">Date</TableHead>
+                <TableRow className="border-gray-100">
+                  <TableHead className="w-[25%] text-gray-700">Type</TableHead>
+                  <TableHead className="w-[25%] text-gray-700">Client</TableHead>
+                  <TableHead className="w-[25%] text-gray-700">Status</TableHead>
+                  <TableHead className="w-[25%] text-gray-700">Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {currentItems.map((item: any, index: number) => (
-                  <TableRow key={index} 
-                  onClick={() => handleRowClick(index)}>
-                    <TableCell className="font-medium">{item.doctype}</TableCell>
-                    <TableCell className="font-medium">{item.client.firstName + " " + item.client.lastName + ", " + item.client.company}</TableCell>
+                  <TableRow 
+                    key={index} 
+                    onClick={() => handleRowClick(index)}
+                    className="border-gray-100 cursor-pointer hover:bg-[#75e782]/5 transition-colors"
+                  >
+                    <TableCell className="font-medium text-gray-800">{item.doctype}</TableCell>
+                    <TableCell className="text-gray-700">{item.client.firstName + " " + item.client.lastName + (item.client.company ? ", " + item.client.company : "")}</TableCell>
                     <TableCell>
                       <Badge className={getStatusStyles(item.status)}>
                         {item.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-medium">{item.date}</TableCell>
+                    <TableCell className="text-gray-700">{item.date}</TableCell>
                     <TableCell className="flex justify-between items-center">
-                      {/* Only show the button if the status is "Completed" */}
                       {item.status === "In Progress" && (
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          onClick={() => console.log(`Sending contract ${index}`)} // Add send logic here
-                          className="ml-auto"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log(`Sending contract ${index}`);
+                          }}
+                          className="ml-auto border-[#75e782] text-[#5bc566] hover:bg-[#75e782]/10 hover:text-[#5bc566]"
                         >
                           <Send className="h-4 w-4" />
                         </Button>
@@ -208,8 +191,8 @@ const Dashboard = () => {
             </Table>
             
             <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-              Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, totalItems)} of {totalItems} items
+              <p className="text-sm text-gray-500">
+                Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, totalItems)} of {totalItems} items
               </p>
               <div className="space-x-2">
                 <Button 
@@ -217,6 +200,7 @@ const Dashboard = () => {
                   size="sm" 
                   onClick={goToPrevPage}
                   disabled={currentPage === 1}
+                  className="border-gray-200 text-gray-700 hover:border-[#75e782] hover:text-[#5bc566]"
                 >
                   Previous
                 </Button>
@@ -225,6 +209,7 @@ const Dashboard = () => {
                   size="sm" 
                   onClick={goToNextPage}
                   disabled={currentPage === totalPages}
+                  className="border-gray-200 text-gray-700 hover:border-[#75e782] hover:text-[#5bc566]"
                 >
                   Next
                 </Button>

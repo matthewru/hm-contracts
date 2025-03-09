@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 interface FormData {
@@ -15,19 +15,17 @@ interface FormData {
   };
   description: string;
 }
+
 interface GenContractProps {
-  userId: string;
+  userId?: string;
 }
 
-const GenContract: React.FC<GenContractProps> = ({ userId }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>(); // Use the FormData type
+const GenContract = ({ userId }: GenContractProps) => {
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
   const router = useRouter();
-  
 
   // Handle form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    if (!userId) return;
-    
     const jsonData = {
       user_id: userId,
       doctype: data.doctype,
@@ -39,25 +37,6 @@ const GenContract: React.FC<GenContractProps> = ({ userId }) => {
       description: data.description,
     };
 
-    // First, check for similar documents
-    fetch('http://localhost:5001/search_similar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        description: data.description,
-        user_id: userId
-      }),
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Similar documents:', data.results);
-      // You could display these to the user if you want
-    })
-    .catch(error => console.error('Error fetching similar documents:', error));
-
-    // Continue with the normal contract generation
     fetch('http://localhost:5001/render', {
       method: 'POST',
       headers: {
@@ -65,83 +44,85 @@ const GenContract: React.FC<GenContractProps> = ({ userId }) => {
       },
       body: JSON.stringify(jsonData),
     })
-    .then((response) => response.text())
-    .then(([html, latex]) => {
-      console.log(html);
-      console.log(latex);
-      localStorage.setItem('contractHtml', html);
-      localStorage.setItem('contractLatex', latex);
-      router.push('/view_contract');
-    })
-    .catch((error) => console.error('Error:', error));
+      .then((response) => response.json())
+      .then((data) => {
+        localStorage.setItem('contractHtml', data.html);
+        localStorage.setItem('contractLatex', data.latex);
+        router.push('/view_contract');
+      })
+      .catch((error) => console.error('Error:', error));
   };
 
   return (
     <div className="p-6 max-w-xl bg-white rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">Generate Your Document</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-gray-800">Generate Your Document</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Short Text Answer */}
+        {/* Subject/Document Type */}
         <div className="mb-4">
-          <Label htmlFor="subject">Subject</Label>
+          <Label htmlFor="doctype" className="text-gray-700 font-medium">Subject</Label>
           <Input
             id="doctype"
             type="text"
             placeholder="Enter Document Type"
-            className="mt-4 w-full"
+            className="mt-2 w-full border-gray-200 focus:border-[#75e782] focus:ring-[#75e782] transition-colors"
             {...register('doctype', { required: true })}
           />
-          {errors.doctype && <p className="text-red-500 text-sm">Document type is required</p>}
+          {errors.doctype && <p className="text-red-500 text-sm mt-1">Document type is required</p>}
         </div>
 
         {/* Client Information */}
         <div className="mb-4">
-          <Label htmlFor="client.firstName">First Name</Label>
+          <Label htmlFor="client.firstName" className="text-gray-700 font-medium">First Name</Label>
           <Input
             id="client.firstName"
             type="text"
             placeholder="Enter first name"
-            className="mt-4 w-full"
+            className="mt-2 w-full border-gray-200 focus:border-[#75e782] focus:ring-[#75e782] transition-colors"
             {...register('client.firstName', { required: true })}
           />
-          {errors.client?.firstName && <p className="text-red-500 text-sm">First name is required</p>}
+          {errors.client?.firstName && <p className="text-red-500 text-sm mt-1">First name is required</p>}
         </div>
+        
         <div className="mb-4">
-          <Label htmlFor="client.lastName">Last Name</Label>
+          <Label htmlFor="client.lastName" className="text-gray-700 font-medium">Last Name</Label>
           <Input
             id="client.lastName"
             type="text"
             placeholder="Enter last name"
-            className="mt-4 w-full"
+            className="mt-2 w-full border-gray-200 focus:border-[#75e782] focus:ring-[#75e782] transition-colors"
             {...register('client.lastName', { required: true })}
           />
-          {errors.client?.lastName && <p className="text-red-500 text-sm">Last name is required</p>}
+          {errors.client?.lastName && <p className="text-red-500 text-sm mt-1">Last name is required</p>}
         </div>
+        
         <div className="mb-4">
-          <Label htmlFor="client.company">Company (Optional)</Label>
+          <Label htmlFor="client.company" className="text-gray-700 font-medium">Company (Optional)</Label>
           <Input
             id="client.company"
             type="text"
-            className="mt-4 w-full"
+            className="mt-2 w-full border-gray-200 focus:border-[#75e782] focus:ring-[#75e782] transition-colors"
             placeholder="Enter company name (optional)"
             {...register('client.company')}
           />
         </div>
 
-        {/* Long Answer Description */}
+        {/* Description */}
         <div className="mb-4">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description" className="text-gray-700 font-medium">Description</Label>
           <Textarea
             id="description"
             placeholder="Enter description"
-            className="mt-4 w-full"
-            rows={5}
+            className="mt-2 w-full border-gray-200 focus:border-[#75e782] focus:ring-[#75e782] transition-colors min-h-[120px]"
             {...register('description', { required: true })}
           />
-          {errors.description && <p className="text-red-500 text-sm">Description is required</p>}
+          {errors.description && <p className="text-red-500 text-sm mt-1">Description is required</p>}
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full mt-4">
+        <Button 
+          type="submit" 
+          className="w-full mt-6 bg-[#75e782] text-gray-800 hover:bg-[#5bc566] border-none"
+        >
           Submit
         </Button>
       </form>
