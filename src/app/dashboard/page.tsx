@@ -1,6 +1,9 @@
 "use client"
 import GenContract from '../generate_contract/page';
 import React, { useState, useEffect } from 'react';
+import { Send } from "lucide-react";  // Import the Send icon
+import { useRouter } from 'next/navigation';
+
 import { 
   Card, 
   CardContent, 
@@ -37,6 +40,9 @@ const Dashboard = () => {
   const [error, setError] = useState<string | null>(null);  // Error state
   const [currentPage, setCurrentPage] = useState(1);
 
+  const router = useRouter();
+
+
   useEffect(() => {
     let userID: any = null;
     if (typeof window !== "undefined") {
@@ -71,6 +77,8 @@ const Dashboard = () => {
   }
   const contracts = user.documents
 
+  
+
   const sampleContracts = [
     {id: 0, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Completed"},
     {id: 1, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
@@ -86,7 +94,13 @@ const Dashboard = () => {
     {id: 11, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
     {id: 12, doctype: "Invoice", firstName: "Henry", lastName: "Ru", company: "Gentleman's Club", status: "Pending"},
   ]
-
+  const handleRowClick = (index: number) => {
+    
+    console.log("clicked")
+    localStorage.setItem('contractHtml', contracts[index].htmlcontent);
+    localStorage.setItem('contractLatex', contracts[index].latexcontent);
+    router.push('/view_contract');
+  };
   
   const itemsPerPage = 12;
   const totalItems = contracts.length;
@@ -102,11 +116,9 @@ const Dashboard = () => {
 
   const getStatusStyles = (status: string) => {
     switch(status) {
-      case 'Completed':
+      case 'Sent':
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case 'In Progress':
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-      case 'Pending':
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
       default:
         return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
@@ -167,13 +179,28 @@ const Dashboard = () => {
               </TableHeader>
               <TableBody>
                 {currentItems.map((item: any, index: number) => (
-                  <TableRow key={index}>
+                  <TableRow key={index} 
+                  onClick={() => handleRowClick(index)}>
                     <TableCell className="font-medium">{item.doctype}</TableCell>
                     <TableCell className="font-medium">{item.client.firstName + " " + item.client.lastName + ", " + item.client.company}</TableCell>
                     <TableCell>
                       <Badge className={getStatusStyles(item.status)}>
                         {item.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">{item.date}</TableCell>
+                    <TableCell className="flex justify-between items-center">
+                      {/* Only show the button if the status is "Completed" */}
+                      {item.status === "In Progress" && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => console.log(`Sending contract ${index}`)} // Add send logic here
+                          className="ml-auto"
+                        >
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

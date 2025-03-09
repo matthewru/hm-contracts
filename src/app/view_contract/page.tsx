@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Edit, MessageCircle, X } from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
+import { useRouter } from 'next/navigation';
 
 type Bubble = {
   id: string;          // a unique ID, e.g. Date.now() or uuid
@@ -13,6 +14,12 @@ type Bubble = {
 };
 
 const ViewContract = () => {
+
+  const router = useRouter();  // Initialize the router
+
+  const handleReturnClick = () => {
+    router.push('/dashboard');  // Navigate to the dashboard page
+  };
   const printRef = useRef<HTMLDivElement>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   
@@ -189,10 +196,14 @@ const ViewContract = () => {
         <header className="w-full flex justify-between items-center p-8">
           <h1 className="text-3xl font-bold">View Contract</h1>
           <div className="flex gap-2">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Edit className="h-4 w-4" />
-              Modify
-            </Button>
+              <Button 
+          variant="outline" 
+          className="flex items-center gap-2" 
+          onClick={handleReturnClick}// Add the onClick handler
+        >
+          <Edit className="h-4 w-4" />
+          Return to Dashboard
+        </Button>
             <Button 
               variant="outline" 
               className="flex items-center gap-2"
@@ -313,12 +324,7 @@ const ViewContract = () => {
           </div>
         ))}
 
-        {/* Export Button */}
-        <div className="p-8">
-          <Button onClick={() => handlePrint()}>
-            Export to PDF
-          </Button>
-        </div>
+        
       </div>
 
       {/* Chat Section */}
