@@ -45,8 +45,11 @@ const GenContract: React.FC<GenContractProps> = ({ userId }) => {
       body: JSON.stringify(jsonData),
     })
       .then((response) => response.text())
-      .then((html) => {
+      .then(([html, latex]) => {
+        console.log(html);
+        console.log(latex);
         localStorage.setItem('contractHtml', html);
+        localStorage.setItem('contractLatex', latex);
         router.push('/view_contract');
       })
       .catch((error) => console.error('Error:', error));

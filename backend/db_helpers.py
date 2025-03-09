@@ -14,7 +14,6 @@ users_collection = db['users']  # The 'users' collection
 
 def get_user_by_id(user_id):
     """Fetch a user by their user_id"""
-    print(user_id)
     return users_collection.find_one({"user_id": user_id})
 
 def update_user_documents(user_id, new_document):

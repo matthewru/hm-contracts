@@ -9,6 +9,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from blueprints.render import render_bp
 from blueprints.summarization import summarization_bp
+from blueprints.chat import chat_bp
 from db_helpers import get_user_by_id, update_user_documents
 from flask import jsonify
 
@@ -54,6 +55,7 @@ def home():
 # Register the blueprint so that its routes (like /render) become available
 app.register_blueprint(render_bp)
 app.register_blueprint(summarization_bp)
+app.register_blueprint(chat_bp)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
