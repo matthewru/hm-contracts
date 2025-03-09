@@ -38,15 +38,12 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-
-    var userID: any = null
+    let userID: any = null;
     if (typeof window !== "undefined") {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       userID = storedUser?.id;
     }
-
-    
-    // Function to fetch user data from the API
+  
     const fetchUserData = async () => {
       try {
         const response = await fetch(`http://localhost:5001/user/${userID}`);
@@ -59,11 +56,11 @@ const Dashboard = () => {
         setError(err.message);
       }
     };
-
+  
     if (userID) {
       fetchUserData();
     }
-  }, [user]);
+  }, []);
 
   if (error) {
     return <div>Error: {error}</div>;

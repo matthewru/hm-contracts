@@ -47,14 +47,20 @@ def start_chat():
                     #                "client": ""} # TODO: MATTHEW
 
                     # update_user_documents(user_id, doc_payload)
-                    return response_latex, response_html, response_chat
+                    return jsonify({
+                        "latex": response_latex,
+                        "html": response_html,
+                        "chat": response_chat
+                    })
                 except subprocess.CalledProcessError as e:
                     print(f"TeX4ht conversion failed: {e.stderr}")
-                    return render_template('contract_result.html', error_message="Failed to convert document to HTML")
+                    return jsonify({'error': 'Failed to convert document to HTML'}), 500
         except Exception as e:
             print(f"Attempt {attempt + 1} failed; error message: {e}")
-
             if attempt == max_attempts - 1:
-                error_message = "Unable to modify document. Please try again."
-                return response_latex, response_html, response_chat
+                return jsonify({
+                        "latex": response_latex,
+                        "html": response_html,
+                        "chat": response_chat
+                    })
 
