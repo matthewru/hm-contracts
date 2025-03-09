@@ -1,0 +1,61 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{setspace}
+\onehalfspacing
+
+% Define new column types for tabularx: 
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE \textbf{Invoice for Utensils and Food Materials}}
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent \textbf{Invoice Number:} \underline{\hspace{5cm}} \hfill \textbf{Date:} \underline{\hspace{5cm}}
+
+\vspace{0.5cm}
+
+\noindent \textbf{Seller:} \underline{\hspace{10cm}}\\
+\noindent \textbf{Buyer:} \underline{\hspace{10cm}}
+
+\vspace{1cm}
+
+% Use tabularx to define a table with relative column widths.
+% The total width is \textwidth. Here we assign approximately:
+% 70% for the product description, 11.5% each for Unit Price and Qty, and 6% for Price.
+\begin{tabularx}{\textwidth}{L{0.70\textwidth} C{0.115\textwidth} C{0.115\textwidth} R{0.06\textwidth}}
+\toprule
+\textbf{Item} & \textbf{Unit Price} & \textbf{Qty.} & \textbf{Price} \\
+\midrule
+Utensils (forks, knives, spoons) & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} \\
+Food Materials (flour, sugar, cookie ingredients) & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} \\
+Milk & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} \\
+Sweetener & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} \\
+Ice Cream Ingredients & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} \\
+Miscellaneous Supplies & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} & \underline{\hspace{1cm}} \\
+\midrule
+\textbf{Subtotal} & & & \underline{\hspace{1cm}} \\
+\textbf{Tax} & & & \underline{\hspace{1cm}} \\
+\textbf{Total} & & & \underline{\hspace{1cm}} \\
+\bottomrule
+\end{tabularx}
+
+\vspace{1cm}
+
+\noindent \textbf{Notes:} \underline{\hspace{\textwidth}}
+
+\vspace{1cm}
+
+% Signature Section
+\noindent \textbf{Authorized Signature:}\rule{5cm}{0.4pt} \hfill \textbf{Date:}\underline{\hspace{3cm}}
+
+\end{document}
