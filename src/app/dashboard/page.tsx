@@ -1,5 +1,5 @@
 "use client"
-import GenContract from '../generate_contract/page';
+import GenContract from '../generate_contract/GenContract';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import SendContractPopup from '@/components/ui/sendcontractpopup';
