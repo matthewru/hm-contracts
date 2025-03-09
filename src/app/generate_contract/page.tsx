@@ -47,8 +47,6 @@ const GenContract: React.FC<GenContractProps> = ({ userId }) => {
       });
       const { html, latex } = await res.json();
 
-      console.log(html);
-      console.log(latex);
       localStorage.setItem('contractHtml', html);
       localStorage.setItem('contractLatex', latex);
       router.push('/view_contract');

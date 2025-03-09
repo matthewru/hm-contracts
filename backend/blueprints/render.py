@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, request, jsonify
 from gemini.create import gen_latex
 from scripts.make4ht import convert_latex_to_html
 from db_helpers import get_user_by_id, update_user_documents
+from datetime import datetime
 
 
 
@@ -29,8 +30,7 @@ def render_contract():
     client_info = prompt.get('client')
     
     user = get_user_by_id(user_id)  # Use the imported function to get user from DB
-    # print(user_id)
-    print("LWEIFPWEI", user)
+
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
@@ -61,9 +61,12 @@ def render_contract():
                     with open(output_html_path, "r", encoding="utf-8") as f:
                         html_content = f.read()
 
-                    doc_payload = {"content": html_content, 
+                    doc_payload = {"htmlcontent": html_content, 
+                                   "latexcontent": contract_latex,
                                    "doctype": doctype,
-                                   "client": client_info}
+                                   "client": client_info,
+                                   "status": "In Progress",
+                                   "date": datetime.now().strftime('%m/%d/%Y')}
 
                     update_user_documents(user_id, doc_payload)
                     return jsonify({
