@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     // Find the highest user_id to increment
     const lastUser = await usersCollection.find().sort({ user_id: -1 }).limit(1).toArray();
     const lastUserId = lastUser.length > 0 ? parseInt(lastUser[0].user_id.replace('', '')) : 0;
-    const newUserId = lastUserId + 1;
+    const newUserId = `${lastUserId + 1}`;
     
     // Create new user document
     const newUser = {
