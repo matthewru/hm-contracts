@@ -25,7 +25,9 @@ const GenContract: React.FC<GenContractProps> = ({ userId }) => {
   
 
   // Handle form submission
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    if (!userId) return;
+    
     const jsonData = {
       user_id: userId,
       doctype: data.doctype,
@@ -37,22 +39,41 @@ const GenContract: React.FC<GenContractProps> = ({ userId }) => {
       description: data.description,
     };
 
-    try {
-      const res = await fetch('http://localhost:5001/render', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonData),
-      });
-      const { html, latex } = await res.json();
+    // First, check for similar documents
+    fetch('http://localhost:5001/search_similar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        description: data.description,
+        user_id: userId
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Similar documents:', data.results);
+      // You could display these to the user if you want
+    })
+    .catch(error => console.error('Error fetching similar documents:', error));
 
+    // Continue with the normal contract generation
+    fetch('http://localhost:5001/render', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    })
+    .then((response) => response.text())
+    .then(([html, latex]) => {
+      console.log(html);
+      console.log(latex);
       localStorage.setItem('contractHtml', html);
       localStorage.setItem('contractLatex', latex);
       router.push('/view_contract');
-    } catch (err) {
-      console.error('Error during contract generation:', err);
-    }
+    })
+    .catch((error) => console.error('Error:', error));
   };
 
   return (

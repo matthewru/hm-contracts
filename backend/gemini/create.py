@@ -3,6 +3,8 @@ from google.genai import types
 from datetime import datetime
 import re
 import asyncio
+import os
+import requests
 
 def extract_latex(text):
     matches = re.findall(r"```latex\s*(.*?)\s*```", text, re.DOTALL)
@@ -41,7 +43,41 @@ async def async_gen_latex(description, admin_first, admin_last, admin_company, d
     return working_text
 
 # This function handles the event loop setup
-def gen_latex(description, admin_first, admin_last, admin_company, document_type, client_first, client_last, client_company=None, modify_message=None, old_latex=None):
+def gen_latex(description, admin_first, admin_last, admin_company, document_type, client_first, client_last, client_company=None, user_id=None):
+    date = datetime.now().strftime("%B %d, %Y")
+    
+    # Get similar documents if user_id is provided
+    similar_docs = []
+    if user_id:
+        try:
+            response = requests.post(
+                'http://localhost:5001/search_similar',
+                json={'description': description, 'user_id': user_id}
+            )
+            if response.ok:
+                similar_docs = response.json().get('results', [])
+        except Exception as e:
+            print(f"Error fetching similar documents: {e}")
+    
+    # Build context from similar documents
+    context = ""
+    if similar_docs:
+        context = "Here are some similar documents I've created before:\n"
+        for i, doc in enumerate(similar_docs, 1):
+            doc_info = doc['document']
+            context += f"{i}. {doc_info.get('doctype', 'Document')} for {doc_info.get('client', {}).get('firstName', '')} {doc_info.get('client', {}).get('lastName', '')}\n"
+        context += "\nPlease use these as reference for style and structure.\n\n"
+    
+    # Build the prompt with RAG context
+    prompt = (
+        f"{context}"
+        f"Make me a professional {document_type} template based on the following info: "
+        f"My information: name = {admin_first} {admin_last}, company = {admin_company}. "
+        f"Client information: name = {client_first} {client_last}{', company = ' + client_company if client_company else ', no client company is provided, assume this is for an individual'}. "
+        f"Date: {date}. "
+        f"Additional description: {description}."
+    )
+    
     # Create a new event loop for this thread if needed
     try:
         loop = asyncio.get_event_loop()
