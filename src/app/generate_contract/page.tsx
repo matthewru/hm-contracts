@@ -15,15 +15,19 @@ interface FormData {
   };
   description: string;
 }
+interface GenContractProps {
+  userId: string;
+}
 
-const GenContract = () => {
+const GenContract: React.FC<GenContractProps> = ({ userId }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>(); // Use the FormData type
   const router = useRouter();
+  
 
   // Handle form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
     const jsonData = {
-      user_id: "auth0|67cc89198ab7ffc6de02365c",
+      user_id: userId,
       doctype: data.doctype,
       client: {
         firstName: data.client.firstName,

@@ -33,13 +33,19 @@ import { PlusCircle } from "lucide-react";
 
 const Dashboard = () => {
 
-  const userID = "auth0|67cc89198ab7ffc6de02365c"
   const [user, setUser] = useState<any | null>(null);  // Use proper type
   const [error, setError] = useState<string | null>(null);  // Error state
   const [currentPage, setCurrentPage] = useState(1);
 
-
   useEffect(() => {
+
+    var userID: any = null
+    if (typeof window !== "undefined") {
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      userID = storedUser?.id;
+    }
+
+    
     // Function to fetch user data from the API
     const fetchUserData = async () => {
       try {
@@ -57,9 +63,8 @@ const Dashboard = () => {
     if (userID) {
       fetchUserData();
     }
-  }, [userID]);
+  }, [user]);
 
-  console.log(user)
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -67,12 +72,6 @@ const Dashboard = () => {
   if (!user) {
     return <div>Loading...</div>;
   }
-  //   const user = {
-  //   name: "Jane Doe",
-  //   email: "jane.doe@example.com",
-  //   avatar: "/api/placeholder/64/64",
-  //   role: "Administrator"
-  // };
   const contracts = user.documents
 
   const sampleContracts = [
@@ -144,14 +143,11 @@ const Dashboard = () => {
             <DialogContent className="sm:max-w-xl">
               <DialogHeader>
                 <DialogTitle></DialogTitle>
-                <DialogDescription>
-                </DialogDescription>
+                <DialogDescription></DialogDescription>
               </DialogHeader>
-              <GenContract></GenContract>
-              <DialogFooter>
-              </DialogFooter>
+              {user && <GenContract userId={user.user_id} />}  {/* Pass user.id as a prop */}
+              <DialogFooter></DialogFooter>
             </DialogContent>
-            
           </Dialog>
           
         </header>
