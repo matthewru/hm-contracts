@@ -29,7 +29,11 @@ export const Auth = () => {
                 <div className="flex items-center gap-4">
                     <span>Welcome, {user?.name}</span>
                     <Button 
-                        onClick={() => logout({ returnTo: window.location.origin })}
+                        onClick={() => logout({ 
+                            logoutParams: { 
+                                returnTo: window.location.origin 
+                            }
+                        })}
                         variant="outline"
                     >
                         Log Out
