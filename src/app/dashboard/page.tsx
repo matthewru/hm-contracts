@@ -41,7 +41,6 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const router = useRouter();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hm-contracts.vercel.app';
 
   useEffect(() => {
     let userID: any = null;
@@ -52,7 +51,11 @@ const Dashboard = () => {
   
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${apiUrl}/user/${userID}`);
+        // Get API URL from localStorage or use environment variable as fallback
+        const storedApiUrl = localStorage.getItem('apiUrl');
+        const apiEndpoint = storedApiUrl || process.env.NEXT_PUBLIC_API_URL || 'https://hm-contracts.vercel.app';
+        
+        const response = await fetch(`${apiEndpoint}/user/${userID}`);
         if (!response.ok) {
           throw new Error('User not found');
         }
@@ -66,7 +69,7 @@ const Dashboard = () => {
     if (userID) {
       fetchUserData();
     }
-  }, [apiUrl]);
+  }, []);
 
   if (error) {
     return <div>Error: {error}</div>;

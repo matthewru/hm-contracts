@@ -6,6 +6,13 @@ import asyncio
 import os
 import requests
 import string
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Get API URL from environment variable or use default
+API_BASE_URL = os.getenv('API_URL')
 
 def extract_latex(text):
     matches = re.findall(r"```latex\s*(.*?)\s*```", text, re.DOTALL)
@@ -110,7 +117,7 @@ def gen_latex(description, admin_first, admin_last, admin_company, document_type
     if user_id:
         try:
             response = requests.post(
-                'http://localhost:5001/search_similar',
+                f'{API_BASE_URL}/search_similar',
                 json={'description': description, 'user_id': user_id}
             )
             if response.ok:

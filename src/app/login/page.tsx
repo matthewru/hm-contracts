@@ -35,9 +35,10 @@ export default function LoginPage() {
         throw new Error(data.message || 'Login failed');
       }
 
-      // Store the token in localStorage
+      // Store the token and API URL in localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('apiUrl', process.env.NEXT_PUBLIC_API_URL || 'https://hm-contracts.vercel.app');
       
       // Redirect to dashboard specifically
       router.push('/dashboard');

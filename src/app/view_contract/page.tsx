@@ -122,8 +122,10 @@ const ViewContract = () => {
     const holdInput = inputMessage;
     setInputMessage('');
 
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hm-contracts.vercel.app';
+
     try {
-      const response = await fetch('http://localhost:5001/chat', {
+      const response = await fetch(`${apiUrl}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
