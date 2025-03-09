@@ -9,8 +9,6 @@ def extract_latex(text):
     return matches[0] if matches else text
 
 async def async_modify_latex(context, focus, message):
-    date = datetime.today()
-
     client = genai.Client(api_key="AIzaSyChp7kIwWx_fA_QEENcIgWCbGrrTNp96-4")
 
     instruction = (
@@ -24,7 +22,7 @@ async def async_modify_latex(context, focus, message):
     content = (
         f"The LaTeX code you are given is: {context}. "
         f"The user wants you to implement the following changes: {message}. "
-        f"The specific part of the document they are referencing is {focus}."
+        f"The specific part of the document they are referencing is: {focus}."
     ) if focus != None else (
         f"The LaTeX code you are given is: {context}. "
         f"The user wants you to implement the following changes: {message}."

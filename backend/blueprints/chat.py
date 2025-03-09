@@ -5,7 +5,7 @@ from gemini.modify import modify_latex
 
 start_chat_bp = Blueprint('start_chat_bp', __name__)
 
-@start_chat_bp.route('/start_chat', methods = ['POST'])
+@start_chat_bp.route('/chat', methods = ['POST'])
 def start_chat():
     data = request.get_json()
     if not data:
