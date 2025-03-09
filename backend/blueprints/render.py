@@ -66,13 +66,15 @@ def render_contract():
                                    "client": client_info}
 
                     update_user_documents(user_id, doc_payload)
-                    return html_content, contract_latex
+                    return jsonify({
+                        "html": html_content,
+                        "latex": contract_latex
+                    })
                 except subprocess.CalledProcessError as e:
                     print(f"TeX4ht conversion failed: {e.stderr}")
-                    return render_template('contract_result.html', error_message="Failed to convert document to HTML")
+                    return jsonify({'error': 'Failed to convert document to HTML'}), 500
         except Exception as e:
             # debugging statement
             print(f"Attempt {attempt + 1} failed; error message: {e}")
             if attempt == max_attempts - 1:
-                error_message = "An error occurred while generating the document. Please try again."
-                return render_template('contract_result.html', error_message=error_message)
+                return jsonify({'error': 'Failed to convert document to HTML'}), 500

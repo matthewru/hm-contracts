@@ -27,63 +27,63 @@ const ViewContract = () => {
   }, []);
 
   // When HTMLContent updates, split it into pages using actual rendered heights
-useEffect(() => {
-  if (HTMLContent) {
-    // Create a temporary container for measuring content.
-    const tempContainer = document.createElement('div');
-    // Style it so it renders off-screen but still uses page layout rules.
-    Object.assign(tempContainer.style, {
-      position: 'absolute',
-      top: '0',
-      left: '-9999px',
-      width: '900px', // same as your page container's max width
-      visibility: 'hidden',
-    });
-    document.body.appendChild(tempContainer);
-    tempContainer.innerHTML = HTMLContent;
+  useEffect(() => {
+    if (HTMLContent) {
+      // Create a temporary container for measuring content.
+      const tempContainer = document.createElement('div');
+      // Style it so it renders off-screen but still uses page layout rules.
+      Object.assign(tempContainer.style, {
+        position: 'absolute',
+        top: '0',
+        left: '-9999px',
+        width: '900px', // same as your page container's max width
+        visibility: 'hidden',
+      });
+      document.body.appendChild(tempContainer);
+      tempContainer.innerHTML = HTMLContent;
 
-    // Define the available page height in pixels.
-    // Adjust this value based on your page size, margins, and scaling.
-    const targetPageHeight = 700;
-    let currentPageHTML = '';
-    let currentHeight = 0;
-    const newPages: string[] = [];
+      // Define the available page height in pixels.
+      // Adjust this value based on your page size, margins, and scaling.
+      const targetPageHeight = 700;
+      let currentPageHTML = '';
+      let currentHeight = 0;
+      const newPages: string[] = [];
 
-    // Iterate over the children of the temporary container.
-    // We use 'children' to only consider element nodes.
-    Array.from(tempContainer.children).forEach((child) => {
-      // Clone the child so we can measure it independently.
-      const measuringChild = child.cloneNode(true) as HTMLElement;
-      tempContainer.appendChild(measuringChild);
-      const elementHeight = measuringChild.offsetHeight;
-      tempContainer.removeChild(measuringChild);
+      // Iterate over the children of the temporary container.
+      // We use 'children' to only consider element nodes.
+      Array.from(tempContainer.children).forEach((child) => {
+        // Clone the child so we can measure it independently.
+        const measuringChild = child.cloneNode(true) as HTMLElement;
+        tempContainer.appendChild(measuringChild);
+        const elementHeight = measuringChild.offsetHeight;
+        tempContainer.removeChild(measuringChild);
 
-      // If adding this element would exceed the target height,
-      // finalize the current page and start a new one.
-      if (currentHeight + elementHeight > targetPageHeight) {
-        if (currentPageHTML.trim().length > 0) {
-          newPages.push(currentPageHTML);
+        // If adding this element would exceed the target height,
+        // finalize the current page and start a new one.
+        if (currentHeight + elementHeight > targetPageHeight) {
+          if (currentPageHTML.trim().length > 0) {
+            newPages.push(currentPageHTML);
+          }
+          // Start a new page with the current child
+          currentPageHTML = child.outerHTML;
+          currentHeight = elementHeight;
+        } else {
+          currentPageHTML += child.outerHTML;
+          currentHeight += elementHeight;
         }
-        // Start a new page with the current child
-        currentPageHTML = child.outerHTML;
-        currentHeight = elementHeight;
-      } else {
-        currentPageHTML += child.outerHTML;
-        currentHeight += elementHeight;
+      });
+
+      // If there is leftover content, add it as a final page.
+      if (currentPageHTML.trim().length > 0) {
+        newPages.push(currentPageHTML);
       }
-    });
 
-    // If there is leftover content, add it as a final page.
-    if (currentPageHTML.trim().length > 0) {
-      newPages.push(currentPageHTML);
+      // Clean up the temporary container.
+      document.body.removeChild(tempContainer);
+
+      setPages(newPages);
     }
-
-    // Clean up the temporary container.
-    document.body.removeChild(tempContainer);
-
-    setPages(newPages);
-  }
-}, [HTMLContent]);
+  }, [HTMLContent]);
 
   // Simplified message handler - just returns a fixed message
   const handleSendMessage = async () => {
@@ -111,21 +111,20 @@ useEffect(() => {
         },
         body: JSON.stringify({ message: inputMessage, focus: focusedText, context: latexContent })
       })
-        .then((response) => response.text(), (err) => {
-          throw new Error(err.message)
-        });
+      
+      const { latex, html, chat } = await response.json();
 
-      setLatexContent(response[0])
-      setHTMLContent(response[1])
+      setLatexContent(latex)
+      setHTMLContent(html)
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: response[3] }
+        { role: 'assistant', content: chat }
       ]);
 
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Error: Unable to fetch response from Gemini API.' }
+        { role: 'assistant', content: 'Unable to generate response. Please try again.' }
       ]);
     }
     

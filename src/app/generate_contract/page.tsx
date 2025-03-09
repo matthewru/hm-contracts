@@ -25,7 +25,7 @@ const GenContract: React.FC<GenContractProps> = ({ userId }) => {
   
 
   // Handle form submission
-  const onSubmit: SubmitHandler<FormData> = (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     const jsonData = {
       user_id: userId,
       doctype: data.doctype,
@@ -37,23 +37,24 @@ const GenContract: React.FC<GenContractProps> = ({ userId }) => {
       description: data.description,
     };
 
-    fetch('http://localhost:5001/render', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonData),
-    })
-      .then((response) => response.text())
-      .then(([html, latex]) => {
-        console.log(html);
-        console.log(latex);
-        localStorage.setItem('contractHtml', html);
-        localStorage.setItem('contractLatex', latex);
-        router.push('/view_contract');
-      })
-      .catch((error) => console.error('Error:', error));
-    console.log('Form submitted:', data);
+    try {
+      const res = await fetch('http://localhost:5001/render', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+      });
+      const { html, latex } = await res.json();
+
+      console.log(html);
+      console.log(latex);
+      localStorage.setItem('contractHtml', html);
+      localStorage.setItem('contractLatex', latex);
+      router.push('/view_contract');
+    } catch (err) {
+      console.error('Error during contract generation:', err);
+    }
   };
 
   return (
