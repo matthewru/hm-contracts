@@ -41,8 +41,9 @@ export default function LoginPage() {
       
       // Redirect to dashboard specifically
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
+    } catch (err: unknown) {
+      setError('Login failed');
+      console.error(err)
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +101,7 @@ export default function LoginPage() {
 
           <div className="text-center mt-4">
             <p className="text-sm text-gray-500">
-              Don't have an account?{" "}
+              {"Don't have an account? "}
               <Link href="/signup" className="text-[#5bc566] hover:underline">
                 Sign up
               </Link>

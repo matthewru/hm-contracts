@@ -3,7 +3,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Edit, MessageCircle, X } from 'lucide-react';
-import { useReactToPrint } from 'react-to-print';
 import { useRouter } from 'next/navigation';
 
 type Bubble = {
