@@ -18,6 +18,7 @@ def start_chat():
     message = data.get('message')
     focus = data.get('focus')
     context = data.get('context')
+    conv_context = data.get('conv_context')
 
     max_attempts = 3
     response_latex = context
@@ -28,7 +29,7 @@ def start_chat():
 
     for attempt in range(max_attempts):
         try:
-            response_latex, response_chat = modify_latex(context, focus, message)
+            response_latex, response_chat = modify_latex(context, focus, message, conv_context)
 
             # print(response_latex)
             # print(response_chat)
