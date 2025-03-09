@@ -142,6 +142,7 @@ const ViewContract = () => {
       ]);
 
     } catch (err) {
+      console.log(err)
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: 'Unable to generate response. Please try again.' }
@@ -149,10 +150,6 @@ const ViewContract = () => {
     }
   };
 
-  const handlePrint = useReactToPrint({
-    contentRef: printRef,
-    documentTitle: 'Contract'
-  });
 
   return (
     <div className="min-h-screen flex bg-white justify-center">

@@ -1,7 +1,6 @@
 "use client"
 import GenContract from '../generate_contract/page';
 import React, { useState, useEffect } from 'react';
-import { Send } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import SendContractPopup from '@/components/ui/sendcontractpopup';
 
@@ -31,7 +30,7 @@ import {
   DialogFooter
 } from "@/components/ui/dialog"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
@@ -82,13 +81,6 @@ const Dashboard = () => {
     localStorage.setItem('contractHtml', contracts[index].htmlcontent);
     localStorage.setItem('contractLatex', contracts[index].latexcontent);
     router.push('/view_contract');
-  };
-
-  const handleSendClick = (index: number) => (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevents row click event
-    const contractDistro = user.documents[index]
-
-    console.log(`Sending contract`);
   };
   
   
@@ -183,7 +175,7 @@ const Dashboard = () => {
                     <TableCell className="flex justify-between items-center">
                       {item.status === "In Progress" && (
                         <div onClick={(e) => e.stopPropagation()}>  
-                        <SendContractPopup contractId={item.id} htmlContent={item.htmlContent} />
+                        <SendContractPopup/>
                       </div>
   )}
                     </TableCell>

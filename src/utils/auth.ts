@@ -22,6 +22,7 @@ export async function getCurrentUser(): Promise<JWTPayload | null> {
     const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
     return decoded;
   } catch (error) {
+    console.log(error)
     return null;
   }
 } 

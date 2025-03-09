@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 import { toast } from "sonner"; // Import Sonner toast
 
-const SendContractPopup = ({ contractId, htmlContent }: { contractId: string, htmlContent: string }) => {
+const SendContractPopup = () => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
