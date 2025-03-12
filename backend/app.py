@@ -42,7 +42,7 @@ def get_user(user_id):
         user = users_collection.find_one({'user_id': user_id})
         if user:
             # Convert MongoDB _id to string (as ObjectId is not JSON serializable)
-            user['_id'] = str(user['_id'])
+            user['user_id'] = str(user['user_id'])
             return jsonify(user), 200
         else:
             return jsonify({'error': 'User not found'}), 404
