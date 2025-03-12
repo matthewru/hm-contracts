@@ -39,10 +39,10 @@ except Exception as e:
 def get_user(user_id):
     try:
         # Find the user by user_id
-        user = users_collection.find_one({'user_id': user_id})
+        user = users_collection.find_one({'_id': user_id})
         if user:
             # Convert MongoDB _id to string (as ObjectId is not JSON serializable)
-            user['user_id'] = str(user['user_id'])
+            user['_id'] = str(user['_id'])
             return jsonify(user), 200
         else:
             return jsonify({'error': 'User not found'}), 404
