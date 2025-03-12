@@ -54,7 +54,7 @@ const Dashboard = () => {
         // Get API URL from localStorage or use environment variable as fallback
         const apiEndpoint = process.env.NEXT_PUBLIC_API_URL || 'https://hm-contracts.vercel.app';
         
-        const response = await fetch(`${apiEndpoint}/user/${userID}`);
+        const response = await fetch(`${apiEndpoint}/api/user/${userID}`);
         if (!response.ok) {
           throw new Error('User not found');
         }
