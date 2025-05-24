@@ -121,3 +121,7 @@ Contributions to PaperPilot are welcome! If you’d like to contribute, please:
 ## License
 
 PaperPilot is released under the MIT License. See [LICENSE](LICENSE) for more information.
+
+
+<img width="1512" alt="Screenshot 2025-03-13 at 2 50 46 PM" src="https://github.com/user-attachments/assets/3b77a1c6-208c-4346-a5f5-edd840b57a8a" />
+<img width="1512" alt="Screenshot 2025-03-09 at 5 28 06 AM" src="https://github.com/user-attachments/assets/aeb434f5-8d22-461e-8218-ea3031d99cb7" />
